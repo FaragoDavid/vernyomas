@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 
+import Login from './components/Login';
 import { ReadingDialog } from './components/ReadingDialog';
 import { ReadingTable } from './components/ReadingTable';
 import RootLayout from './components/RootLayout';
 import { StatsStrip } from './components/StatsStrip';
 import { TrendChart } from './components/TrendChart';
 import { useStore } from './data/store';
+import { useAuth } from './services/auth';
 import type { BloodPressureReading } from './types/reading';
 
 type ChartView = 'systolic' | 'diastolic' | 'pulse';
 
 function App() {
+  const user = useAuth();
   const store = useStore();
   const [readings, setReadings] = useState<BloodPressureReading[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +63,13 @@ function App() {
             1,
         )
       : 0;
+
+  if (user === null)
+    return (
+      <RootLayout>
+        <Login />
+      </RootLayout>
+    );
 
   return (
     <RootLayout>
