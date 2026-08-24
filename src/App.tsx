@@ -4,7 +4,6 @@ import { Plus } from 'lucide-react';
 import Login from './components/Login';
 import { ReadingDialog } from './components/ReadingDialog';
 import { ReadingTable } from './components/ReadingTable';
-import RootLayout from './components/RootLayout';
 import { StatsStrip } from './components/StatsStrip';
 import { TrendChart } from './components/TrendChart';
 import { useStore } from './data/store';
@@ -64,91 +63,84 @@ function App() {
         )
       : 0;
 
-  if (user === null)
-    return (
-      <RootLayout>
-        <Login />
-      </RootLayout>
-    );
+  if (user === null) return <Login />;
 
   return (
-    <RootLayout>
-      <div className="page">
-        <div className="page-inner">
-          <div className="page-header">
-            <div>
-              <h1 className="page-title">Vérnyomás</h1>
-            </div>
-            <ReadingDialog onAdd={handleAddReading} editingReading={editingReading} onEditingChange={setEditingReading} />
+    <div className="page">
+      <div className="page-inner">
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">Vérnyomás</h1>
           </div>
+          <ReadingDialog onAdd={handleAddReading} editingReading={editingReading} onEditingChange={setEditingReading} />
+        </div>
 
-          {loading ? (
-            <div className="text-center text-cream-100 py-12">Betöltés...</div>
-          ) : (
-            <>
-              <StatsStrip readings={readings} />
+        {loading ? (
+          <div className="text-center text-cream-100 py-12">Betöltés...</div>
+        ) : (
+          <>
+            <StatsStrip readings={readings} />
 
-              <div className="card">
-                <div className="chart-tabs">
-                  <div className="chart-selectors">
-                    {(['systolic', 'diastolic', 'pulse'] as ChartView[]).map((view) => (
-                      <button key={view} onClick={() => setChartView(view)} className={chartView === view ? 'tab-btn-active' : 'tab-btn'}>
-                        {isNarrow
-                          ? view === 'systolic'
-                            ? 'Sys'
-                            : view === 'diastolic'
-                              ? 'Dia'
-                              : 'Pul'
-                          : view === 'systolic'
-                            ? 'Szisztolés'
-                            : view === 'diastolic'
-                              ? 'Diasztolés'
-                              : 'Pulzus'}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="chart-month-nav">
-                    <button
-                      className="chart-month-btn"
-                      onClick={() => setChartMonthOffset((prev) => Math.min(prev + 1, maxMonthOffset))}
-                      disabled={chartMonthOffset >= maxMonthOffset}
-                    >
-                      ←
+            <div className="card">
+              <div className="chart-tabs">
+                <div className="chart-selectors">
+                  {(['systolic', 'diastolic', 'pulse'] as ChartView[]).map((view) => (
+                    <button key={view} onClick={() => setChartView(view)} className={chartView === view ? 'tab-btn-active' : 'tab-btn'}>
+                      {isNarrow
+                        ? view === 'systolic'
+                          ? 'Sys'
+                          : view === 'diastolic'
+                            ? 'Dia'
+                            : 'Pul'
+                        : view === 'systolic'
+                          ? 'Szisztolés'
+                          : view === 'diastolic'
+                            ? 'Diasztolés'
+                            : 'Pulzus'}
                     </button>
-                    <button className="chart-month-btn" onClick={() => setChartMonthOffset(0)} disabled={chartMonthOffset === 0}>
-                      Ma
-                    </button>
-                    <button
-                      className="chart-month-btn"
-                      onClick={() => setChartMonthOffset((prev) => Math.max(0, prev - 1))}
-                      disabled={chartMonthOffset === 0}
-                    >
-                      →
-                    </button>
-                  </div>
+                  ))}
                 </div>
-                <div className="chart-body">
-                  <TrendChart
-                    readings={readings}
-                    type={chartView}
-                    monthOffset={chartMonthOffset}
-                    slidingWindowSize={parseInt(import.meta.env.VITE_CHART_SLIDING_WINDOW_SIZE || '10')}
-                  />
-                  <div className="chart-month-label">
-                    {new Date(new Date().getFullYear(), new Date().getMonth() - chartMonthOffset, 1).toLocaleString('hu', {
-                      year: 'numeric',
-                      month: 'long',
-                    })}
-                  </div>
+                <div className="chart-month-nav">
+                  <button
+                    className="chart-month-btn"
+                    onClick={() => setChartMonthOffset((prev) => Math.min(prev + 1, maxMonthOffset))}
+                    disabled={chartMonthOffset >= maxMonthOffset}
+                  >
+                    ←
+                  </button>
+                  <button className="chart-month-btn" onClick={() => setChartMonthOffset(0)} disabled={chartMonthOffset === 0}>
+                    Ma
+                  </button>
+                  <button
+                    className="chart-month-btn"
+                    onClick={() => setChartMonthOffset((prev) => Math.max(0, prev - 1))}
+                    disabled={chartMonthOffset === 0}
+                  >
+                    →
+                  </button>
                 </div>
               </div>
+              <div className="chart-body">
+                <TrendChart
+                  readings={readings}
+                  type={chartView}
+                  monthOffset={chartMonthOffset}
+                  slidingWindowSize={parseInt(import.meta.env.VITE_CHART_SLIDING_WINDOW_SIZE || '10')}
+                />
+                <div className="chart-month-label">
+                  {new Date(new Date().getFullYear(), new Date().getMonth() - chartMonthOffset, 1).toLocaleString('hu', {
+                    year: 'numeric',
+                    month: 'long',
+                  })}
+                </div>
+              </div>
+            </div>
 
-              <ReadingTable readings={readings} onDelete={handleDeleteReading} onEdit={handleEditReading} />
-            </>
-          )}
-        </div>
+            <ReadingTable readings={readings} onDelete={handleDeleteReading} onEdit={handleEditReading} />
+          </>
+        )}
       </div>
-    </RootLayout>
+    </div>
   );
 }
 
