@@ -28,18 +28,16 @@ export function createRemoteStore(): Store {
     },
 
     async addReading(reading: Omit<BloodPressureReading, 'id'>): Promise<string> {
-      const docRef = await addDoc(collection(db, COLLECTION), {
-        ...reading,
-        timestamp: new Date(reading.timestamp),
-      });
+      const data = { ...reading, timestamp: new Date(reading.timestamp) };
+      if (data.notes === undefined) delete data.notes;
+      const docRef = await addDoc(collection(db, COLLECTION), data);
       return docRef.id;
     },
 
     async updateReading(reading: BloodPressureReading): Promise<void> {
-      await updateDoc(doc(db, COLLECTION, reading.id), {
-        ...reading,
-        timestamp: new Date(reading.timestamp),
-      });
+      const data = { ...reading, timestamp: new Date(reading.timestamp) };
+      if (data.notes === undefined) delete data.notes;
+      await updateDoc(doc(db, COLLECTION, reading.id), data);
     },
 
     async deleteReading(id: string): Promise<void> {
