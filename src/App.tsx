@@ -40,8 +40,17 @@ function App() {
   }, []);
 
   const handleAddReading = async (reading: Omit<BloodPressureReading, 'id'>) => {
-    const id = await store.addReading(reading);
-    setReadings((prev) => [{ ...reading, id }, ...prev].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+    if (editingReading) {
+      const updated = { ...reading, id: editingReading.id };
+      await store.updateReading(updated as BloodPressureReading);
+      setReadings((prev) =>
+        prev.map((r) => (r.id === editingReading.id ? updated : r)).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
+      );
+      setEditingReading(null);
+    } else {
+      const id = await store.addReading(reading);
+      setReadings((prev) => [{ ...reading, id }, ...prev].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+    }
   };
 
   const handleDeleteReading = async (id: string) => {
