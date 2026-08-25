@@ -1,6 +1,7 @@
 import { CACHE_KEY, type Store } from './store';
 import type { BloodPressureReading } from '../types/reading';
 import { MOCK_READINGS } from './mock-data';
+import { sortByTimestampAsc } from '../utils/sort';
 
 export function createLocalStore(): Store {
   return {
@@ -8,20 +9,23 @@ export function createLocalStore(): Store {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
-        return parsed.map((r: any) => ({
-          ...r,
-          timestamp: new Date(r.timestamp),
-        }));
+        return parsed
+          .map((r: any) => ({
+            ...r,
+            timestamp: new Date(r.timestamp),
+          }))
+          .sort(sortByTimestampAsc);
       }
-      localStorage.setItem(CACHE_KEY, JSON.stringify(MOCK_READINGS));
-      return MOCK_READINGS;
+      const sorted = [...MOCK_READINGS].sort(sortByTimestampAsc);
+      localStorage.setItem(CACHE_KEY, JSON.stringify(sorted));
+      return sorted;
     },
 
     async addReading(reading: Omit<BloodPressureReading, 'id'>): Promise<string> {
       const id = crypto.randomUUID();
       const readings = await this.readReadings();
       readings.push({ ...reading, id });
-      localStorage.setItem(CACHE_KEY, JSON.stringify(readings));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(readings.sort(sortByTimestampAsc)));
       return id;
     },
 
@@ -30,7 +34,7 @@ export function createLocalStore(): Store {
       const index = readings.findIndex((r) => r.id === reading.id);
       if (index !== -1) {
         readings[index] = reading;
-        localStorage.setItem(CACHE_KEY, JSON.stringify(readings));
+        localStorage.setItem(CACHE_KEY, JSON.stringify(readings.sort(sortByTimestampAsc)));
       }
     },
 

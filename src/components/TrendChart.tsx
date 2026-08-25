@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { sortByTimestampAsc } from '../utils/sort';
 import type { BloodPressureReading } from '../types/reading';
 
 interface Point {
@@ -29,7 +30,7 @@ export function TrendChart({ readings, type, monthOffset, slidingWindowSize = 10
       return readingDate.getTime() === filterDate.getTime();
     });
 
-    const sorted = [...filtered].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    const sorted = [...filtered].sort(sortByTimestampAsc);
     const dataPoints = sorted.map((reading, index) => ({
       x: index,
       y: type === 'systolic' ? reading.systolic : type === 'diastolic' ? reading.diastolic : reading.pulse,

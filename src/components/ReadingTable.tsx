@@ -42,7 +42,7 @@ export function ReadingTable({ readings, onDelete, onEdit, disabled = false }: R
     </tr>
   );
 
-  const readingRows = readings.map((reading) => (
+  const readingRows = [...readings].reverse().map((reading) => (
     <tr key={reading.id} className="table-row">
       <td className="table-cell-date">{format(reading.timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu })}</td>
       <td className="table-cell">{reading.systolic}</td>

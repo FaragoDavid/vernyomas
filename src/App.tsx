@@ -27,14 +27,14 @@ function App() {
   const loadReadings = async () => {
     setLoading(true);
     const data = await store.readReadings();
-    setReadings(data.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+    setReadings(data);
     setLoading(false);
   };
 
   const handleRefresh = async () => {
     setRefreshing(true);
     const data = await store.readReadings();
-    setReadings(data.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+    setReadings(data);
     setRefreshing(false);
   };
 
@@ -48,18 +48,15 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleAddReading = async (reading: Omit<BloodPressureReading, 'id'>) => {
+  const handleSaveReading = async (reading: Omit<BloodPressureReading, 'id'>) => {
     if (editingReading) {
-      const updated = { ...reading, id: editingReading.id };
-      await store.updateReading(updated as BloodPressureReading);
-      setReadings((prev) =>
-        prev.map((r) => (r.id === editingReading.id ? updated : r)).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
-      );
+      await store.updateReading({ ...reading, id: editingReading.id });
       setEditingReading(null);
     } else {
-      const id = await store.addReading(reading);
-      setReadings((prev) => [{ ...reading, id }, ...prev].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+      await store.addReading(reading);
     }
+    const data = await store.readReadings();
+    setReadings(data);
   };
 
   const handleDeleteReading = async (id: string) => {
@@ -69,6 +66,7 @@ function App() {
 
   const handleEditReading = (reading: BloodPressureReading) => {
     setEditingReading(reading);
+    setDialogOpen(true);
   };
 
   const maxMonthOffset =
@@ -104,14 +102,18 @@ function App() {
           <div className="text-center text-cream-100 py-12">Betöltés...</div>
         ) : (
           <>
-            <ReadingDialog
-              open={dialogOpen}
-              onOpenChange={setDialogOpen}
-              onAdd={handleAddReading}
-              editingReading={editingReading}
-              onEditingChange={setEditingReading}
-              disabled={refreshing}
-            />
+            {dialogOpen && (
+              <ReadingDialog
+                title={editingReading ? 'Mérés szerkesztése' : 'Új mérés'}
+                initialReading={editingReading ?? undefined}
+                onAdd={handleSaveReading}
+                onClose={() => {
+                  setDialogOpen(false);
+                  setEditingReading(null);
+                }}
+                disabled={refreshing}
+              />
+            )}
             <StatsStrip readings={readings} />
 
             <div className="card">
