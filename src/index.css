@@ -194,7 +194,7 @@
     font-size: 0.875rem;
   }
 
-  .chart-tabs {
+  .chart-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;

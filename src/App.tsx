@@ -115,7 +115,7 @@ function App() {
             <StatsStrip readings={readings} />
 
             <div className="card">
-              <div className="chart-tabs">
+              <div className="chart-controls">
                 <div className="chart-selectors">
                   {(['systolic', 'diastolic', 'pulse'] as ChartView[]).map((view) => (
                     <button key={view} onClick={() => setChartView(view)} className={chartView === view ? 'tab-btn-active' : 'tab-btn'}>
