@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
+import { subMonths, isSameMonth } from 'date-fns';
 
 import Login from './components/Login';
 import { ReadingDialog } from './components/ReadingDialog';
@@ -21,7 +22,7 @@ function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [chartView, setChartView] = useState<ChartView>('systolic');
   const [editingReading, setEditingReading] = useState<BloodPressureReading | null>(null);
-  const [chartMonthOffset, setChartMonthOffset] = useState(0);
+  const [targetMonth, setTargetMonth] = useState(new Date());
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
 
   const loadReadings = async () => {
@@ -69,15 +70,8 @@ function App() {
     setDialogOpen(true);
   };
 
-  const maxMonthOffset =
-    readings.length > 0
-      ? Math.floor(
-          (new Date().getFullYear() * 12 +
-            new Date().getMonth() -
-            (readings[readings.length - 1].timestamp.getFullYear() * 12 + readings[readings.length - 1].timestamp.getMonth())) /
-            1,
-        )
-      : 0;
+  const isCurrentMonth = isSameMonth(targetMonth, new Date());
+  const earliestTimestamp = readings.length > 0 ? readings[readings.length - 1].timestamp : new Date();
 
   if (user === null) return <Login />;
 
@@ -138,19 +132,15 @@ function App() {
                 <div className="chart-month-nav">
                   <button
                     className="chart-month-btn"
-                    onClick={() => setChartMonthOffset((prev) => Math.min(prev + 1, maxMonthOffset))}
-                    disabled={chartMonthOffset >= maxMonthOffset}
+                    onClick={() => setTargetMonth(subMonths(targetMonth, 1))}
+                    disabled={isSameMonth(subMonths(targetMonth, 1), earliestTimestamp)}
                   >
                     ←
                   </button>
-                  <button className="chart-month-btn" onClick={() => setChartMonthOffset(0)} disabled={chartMonthOffset === 0}>
+                  <button className="chart-month-btn" onClick={() => setTargetMonth(new Date())} disabled={isCurrentMonth}>
                     Ma
                   </button>
-                  <button
-                    className="chart-month-btn"
-                    onClick={() => setChartMonthOffset((prev) => Math.max(0, prev - 1))}
-                    disabled={chartMonthOffset === 0}
-                  >
+                  <button className="chart-month-btn" onClick={() => setTargetMonth(subMonths(targetMonth, -1))} disabled={isCurrentMonth}>
                     →
                   </button>
                 </div>
@@ -159,11 +149,11 @@ function App() {
                 <TrendChart
                   readings={readings}
                   type={chartView}
-                  monthOffset={chartMonthOffset}
+                  targetMonth={targetMonth}
                   slidingWindowSize={parseInt(import.meta.env.VITE_CHART_SLIDING_WINDOW_SIZE || '10')}
                 />
                 <div className="chart-month-label">
-                  {new Date(new Date().getFullYear(), new Date().getMonth() - chartMonthOffset, 1).toLocaleString('hu', {
+                  {targetMonth.toLocaleString('hu', {
                     year: 'numeric',
                     month: 'long',
                   })}

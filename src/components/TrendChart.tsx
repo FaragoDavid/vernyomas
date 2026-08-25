@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isSameMonth } from 'date-fns';
 import type { BloodPressureReading } from '../types/reading';
 
 interface Point {
@@ -10,33 +11,27 @@ interface Point {
 interface TrendChartProps {
   readings: BloodPressureReading[];
   type: 'systolic' | 'diastolic' | 'pulse';
-  monthOffset: number;
+  targetMonth: Date;
   slidingWindowSize?: number;
 }
 
-export function TrendChart({ readings, type, monthOffset, slidingWindowSize = 10 }: TrendChartProps) {
+export function TrendChart({ readings, type, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
   const [points, setPoints] = useState<Point[]>([]);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
 
   useEffect(() => {
     if (readings.length === 0) return;
 
-    const now = new Date();
-    const filterDate = new Date(now.getFullYear(), now.getMonth() - monthOffset, 1);
-
-    const filtered = readings.filter((r) => {
-      const readingDate = new Date(r.timestamp.getFullYear(), r.timestamp.getMonth(), 1);
-      return readingDate.getTime() === filterDate.getTime();
-    });
-
-    const dataPoints = filtered.map((reading, index) => ({
-      x: index,
-      y: type === 'systolic' ? reading.systolic : type === 'diastolic' ? reading.diastolic : reading.pulse,
-      label: reading.timestamp.toLocaleDateString(),
-    }));
+    const dataPoints = readings
+      .filter((r) => isSameMonth(r.timestamp, targetMonth))
+      .map((reading, index) => ({
+        x: index,
+        y: type === 'systolic' ? reading.systolic : type === 'diastolic' ? reading.diastolic : reading.pulse,
+        label: reading.timestamp.toLocaleDateString(),
+      }));
 
     setPoints(dataPoints);
-  }, [readings, type, monthOffset]);
+  }, [readings, type, targetMonth]);
 
   useEffect(() => {
     const handleResize = () => setIsNarrow(window.innerWidth < 640);
