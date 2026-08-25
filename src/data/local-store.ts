@@ -12,12 +12,12 @@ export function createLocalStore(): Store {
         return parsed
           .map((r: any) => ({
             ...r,
-            timestamp: new Date(r.timestamp),
+            timestamp: new Date(typeof r.timestamp === 'number' ? r.timestamp : r.timestamp),
           }))
           .sort(sortByTimestampAsc);
       }
       const sorted = [...MOCK_READINGS].sort(sortByTimestampAsc);
-      localStorage.setItem(CACHE_KEY, JSON.stringify(sorted));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(sorted.map((r) => ({ ...r, timestamp: r.timestamp.getTime() }))));
       return sorted;
     },
 
@@ -25,7 +25,8 @@ export function createLocalStore(): Store {
       const id = crypto.randomUUID();
       const readings = await this.readReadings();
       readings.push({ ...reading, id });
-      localStorage.setItem(CACHE_KEY, JSON.stringify(readings.sort(sortByTimestampAsc)));
+      const sorted = readings.sort(sortByTimestampAsc);
+      localStorage.setItem(CACHE_KEY, JSON.stringify(sorted.map((r) => ({ ...r, timestamp: r.timestamp.getTime() }))));
       return id;
     },
 
@@ -34,14 +35,15 @@ export function createLocalStore(): Store {
       const index = readings.findIndex((r) => r.id === reading.id);
       if (index !== -1) {
         readings[index] = reading;
-        localStorage.setItem(CACHE_KEY, JSON.stringify(readings.sort(sortByTimestampAsc)));
+        const sorted = readings.sort(sortByTimestampAsc);
+        localStorage.setItem(CACHE_KEY, JSON.stringify(sorted.map((r) => ({ ...r, timestamp: r.timestamp.getTime() }))));
       }
     },
 
     async deleteReading(id: string): Promise<void> {
       const readings = await this.readReadings();
       const filtered = readings.filter((r) => r.id !== id);
-      localStorage.setItem(CACHE_KEY, JSON.stringify(filtered));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(filtered.map((r) => ({ ...r, timestamp: r.timestamp.getTime() }))));
     },
   };
 }

@@ -14,16 +14,7 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
   const [systolic, setSystolic] = useState(initialReading?.systolic.toString() ?? '');
   const [diastolic, setDiastolic] = useState(initialReading?.diastolic.toString() ?? '');
   const [pulse, setPulse] = useState(initialReading?.pulse.toString() ?? '');
-  const [timestamp, setTimestamp] = useState(() => {
-    if (initialReading) {
-      const date = new Date(initialReading.timestamp);
-      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-      return date.toISOString().slice(0, 16);
-    }
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  });
+  const [timestamp, setTimestamp] = useState<number>(initialReading?.timestamp.getTime() ?? Date.now());
   const [notes, setNotes] = useState(initialReading?.notes ?? '');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -59,7 +50,12 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
           </div>
           <div className="form-field">
             <label className="form-label">Dátum és idő</label>
-            <input type="datetime-local" value={timestamp} onChange={(e) => setTimestamp(e.target.value)} className="form-input" />
+            <input
+              type="datetime-local"
+              value={new Date(timestamp).toISOString().slice(0, 16)}
+              onChange={(e) => setTimestamp(new Date(e.target.value).getTime())}
+              className="form-input"
+            />
           </div>
           <div className="form-field">
             <label className="form-label">Megjegyzések (opcionális)</label>
