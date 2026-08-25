@@ -65,8 +65,7 @@ function App() {
     setDialogOpen(true);
   };
 
-  const isCurrentMonth = isSameMonth(targetMonth, new Date());
-  const earliestTimestamp = readings.length > 0 ? readings[readings.length - 1].timestamp : new Date();
+  const canGoPrev = readings.some((r) => isSameMonth(subMonths(targetMonth, 1), r.timestamp));
 
   if (user === null) return <Login />;
 
@@ -125,17 +124,21 @@ function App() {
                   ))}
                 </div>
                 <div className="chart-month-nav">
-                  <button
-                    className="chart-month-btn"
-                    onClick={() => setTargetMonth(subMonths(targetMonth, 1))}
-                    disabled={isSameMonth(subMonths(targetMonth, 1), earliestTimestamp)}
-                  >
+                  <button className="chart-month-btn" onClick={() => setTargetMonth(subMonths(targetMonth, 1))} disabled={!canGoPrev}>
                     ←
                   </button>
-                  <button className="chart-month-btn" onClick={() => setTargetMonth(new Date())} disabled={isCurrentMonth}>
+                  <button
+                    className="chart-month-btn"
+                    onClick={() => setTargetMonth(new Date())}
+                    disabled={isSameMonth(targetMonth, new Date())}
+                  >
                     Ma
                   </button>
-                  <button className="chart-month-btn" onClick={() => setTargetMonth(subMonths(targetMonth, -1))} disabled={isCurrentMonth}>
+                  <button
+                    className="chart-month-btn"
+                    onClick={() => setTargetMonth(subMonths(targetMonth, -1))}
+                    disabled={isSameMonth(targetMonth, new Date())}
+                  >
                     →
                   </button>
                 </div>
