@@ -3,6 +3,7 @@ import { hu } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 
+import { ConfirmDialog } from './ConfirmDialog';
 import type { BloodPressureReading } from '../types/reading';
 
 interface ReadingTableProps {
@@ -13,6 +14,7 @@ interface ReadingTableProps {
 
 export function ReadingTable({ readings, onDelete, onEdit }: ReadingTableProps) {
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   useEffect(() => {
     const handleResize = () => setIsNarrow(window.innerWidth < 640);
@@ -20,49 +22,72 @@ export function ReadingTable({ readings, onDelete, onEdit }: ReadingTableProps) 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const handleDeleteClick = (id: string) => {
+    setDeleteConfirm(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirm) {
+      onDelete(deleteConfirm);
+      setDeleteConfirm(null);
+    }
+  };
+
   return (
-    <div className="table-card">
-      <table>
-        <thead>
-          <tr className="table-header-row">
-            <th className="table-header-cell">Dátum</th>
-            <th className="table-header-cell">Szisztolés</th>
-            <th className="table-header-cell">Diasztolés</th>
-            <th className="table-header-cell">Pulzus</th>
-            {!isNarrow && <th className="table-header-cell">Megjegyzések</th>}
-            <th className="table-header-cell table-cell-center"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {readings.length === 0 ? (
-            <tr>
-              <td colSpan={isNarrow ? 5 : 6} className="table-cell table-empty">
-                Nincs mérés
-              </td>
+    <>
+      <div className="table-card">
+        <table>
+          <thead>
+            <tr className="table-header-row">
+              <th className="table-header-cell">Dátum</th>
+              <th className="table-header-cell">Szisztolés</th>
+              <th className="table-header-cell">Diasztolés</th>
+              <th className="table-header-cell">Pulzus</th>
+              {!isNarrow && <th className="table-header-cell">Megjegyzések</th>}
+              <th className="table-header-cell table-cell-center"></th>
             </tr>
-          ) : (
-            readings.map((reading) => (
-              <tr key={reading.id} className="table-row">
-                <td className="table-cell-date">{format(reading.timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu })}</td>
-                <td className="table-cell">{reading.systolic}</td>
-                <td className="table-cell">{reading.diastolic}</td>
-                <td className="table-cell">{reading.pulse}</td>
-                {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
-                <td className="table-cell-center">
-                  <div className="table-cell-actions">
-                    <button onClick={() => onEdit(reading)} className="btn-edit">
-                      <Edit2 size={18} />
-                    </button>
-                    <button onClick={() => onDelete(reading.id)} className="btn-delete">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+          </thead>
+          <tbody>
+            {readings.length === 0 ? (
+              <tr>
+                <td colSpan={isNarrow ? 5 : 6} className="table-cell table-empty">
+                  Nincs mérés
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+            ) : (
+              readings.map((reading) => (
+                <tr key={reading.id} className="table-row">
+                  <td className="table-cell-date">{format(reading.timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu })}</td>
+                  <td className="table-cell">{reading.systolic}</td>
+                  <td className="table-cell">{reading.diastolic}</td>
+                  <td className="table-cell">{reading.pulse}</td>
+                  {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
+                  <td className="table-cell-center">
+                    <div className="table-cell-actions">
+                      <button onClick={() => onEdit(reading)} className="btn-edit">
+                        <Edit2 size={18} />
+                      </button>
+                      <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <ConfirmDialog
+        open={deleteConfirm !== null}
+        title="Mérés törlése"
+        message="Biztos vagy, hogy szeretnéd törölni ezt a mérést?"
+        confirmText="Törlés"
+        cancelText="Mégse"
+        isDangerous
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirm(null)}
+      />
+    </>
   );
 }
