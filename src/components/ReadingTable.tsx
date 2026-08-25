@@ -1,8 +1,9 @@
 import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
 import { Edit2, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
+import { useNarrow } from '../hooks/use-narrow';
 import type { BloodPressureReading } from '../types/reading';
 import { getReadingLevel } from '../utils/blood-pressure-level';
 import { DeleteConfirmDialog } from './ConfirmDialog';
@@ -15,14 +16,8 @@ interface ReadingTableProps {
 }
 
 export function ReadingTable({ readings, onDelete, onEdit, disabled = false }: ReadingTableProps) {
-  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
+  const isNarrow = useNarrow();
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleResize = () => setIsNarrow(window.innerWidth < 640);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleDeleteClick = (id: string) => {
     setDeleteConfirm(id);

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { isSameMonth, subMonths } from 'date-fns';
 import { Plus, RefreshCw } from 'lucide-react';
-import { subMonths, isSameMonth } from 'date-fns';
+import { useEffect, useState } from 'react';
 
 import Login from './components/Login';
 import { ReadingDialog } from './components/ReadingDialog';
@@ -8,6 +8,7 @@ import { ReadingTable } from './components/ReadingTable';
 import { StatsStrip } from './components/StatsStrip';
 import { TrendChart } from './components/TrendChart';
 import { useStore } from './data/store';
+import { useNarrow } from './hooks/use-narrow';
 import { useAuth } from './services/auth';
 import type { BloodPressureReading } from './types/reading';
 
@@ -23,7 +24,7 @@ function App() {
   const [chartView, setChartView] = useState<ChartView>('systolic');
   const [editingReading, setEditingReading] = useState<BloodPressureReading | null>(null);
   const [targetMonth, setTargetMonth] = useState(new Date());
-  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
+  const isNarrow = useNarrow();
 
   const loadReadings = async () => {
     setLoading(true);
@@ -42,12 +43,6 @@ function App() {
   useEffect(() => {
     loadReadings();
   }, [store]);
-
-  useEffect(() => {
-    const handleResize = () => setIsNarrow(window.innerWidth < 640);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleSaveReading = async (reading: Omit<BloodPressureReading, 'id'>) => {
     if (editingReading) {

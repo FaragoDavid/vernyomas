@@ -1,6 +1,7 @@
 import { isSameMonth } from 'date-fns';
 import { useEffect, useState } from 'react';
 
+import { useNarrow } from '../hooks/use-narrow';
 import type { BloodPressureReading, ReadingType } from '../types/reading';
 import { type BloodPressureLevel, getReadingLevel } from '../utils/blood-pressure-level';
 
@@ -29,7 +30,7 @@ const getColorValue = (level: BloodPressureLevel): string => {
 
 export function TrendChart({ readings, readingType, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
   const [points, setPoints] = useState<Point[]>([]);
-  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
+  const isNarrow = useNarrow();
 
   useEffect(() => {
     if (readings.length === 0) return;
@@ -61,12 +62,6 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
 
     setPoints(dataPoints);
   }, [readings, readingType, targetMonth, slidingWindowSize]);
-
-  useEffect(() => {
-    const handleResize = () => setIsNarrow(window.innerWidth < 640);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   if (points.length === 0) return <div className="text-center py-12 text-cream-100">Nincs adat</div>;
 
