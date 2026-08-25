@@ -148,7 +148,7 @@ function App() {
               <div className="chart-body">
                 <TrendChart
                   readings={readings}
-                  type={chartView}
+                  readingType={chartView}
                   targetMonth={targetMonth}
                   slidingWindowSize={parseInt(import.meta.env.VITE_CHART_SLIDING_WINDOW_SIZE || '10')}
                 />

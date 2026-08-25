@@ -7,42 +7,60 @@ import { type BloodPressureLevel, getReadingLevel } from '../utils/blood-pressur
 interface Point {
   x: number;
   y: number;
+  trend: number;
   label: string;
   level: BloodPressureLevel;
 }
 
 interface TrendChartProps {
   readings: BloodPressureReading[];
-  type: ReadingType;
+  readingType: ReadingType;
   targetMonth: Date;
   slidingWindowSize?: number;
 }
 
-const getColorValue = (level: BloodPressureLevel): string => {
-  return getComputedStyle(document.documentElement).getPropertyValue(`--bp-${level}`).trim();
+const getChartColor = (colorName: string): string => {
+  return getComputedStyle(document.documentElement).getPropertyValue(`--${colorName}`).trim();
 };
 
-export function TrendChart({ readings, type, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
+const getColorValue = (level: BloodPressureLevel): string => {
+  return getChartColor(`bp-${level}`);
+};
+
+export function TrendChart({ readings, readingType, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
   const [points, setPoints] = useState<Point[]>([]);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
 
   useEffect(() => {
     if (readings.length === 0) return;
 
-    const dataPoints = readings
-      .filter((r) => isSameMonth(r.timestamp, targetMonth))
-      .map((reading, index) => {
-        const value = type === 'systolic' ? reading.systolic : type === 'diastolic' ? reading.diastolic : reading.pulse;
-        return {
-          x: index,
-          y: value,
-          label: reading.timestamp.toLocaleDateString(),
-          level: getReadingLevel(type, value),
-        };
-      });
+    const readingsOfTargetMonth = readings.filter(({ timestamp }) => isSameMonth(timestamp, targetMonth));
+    if (readingsOfTargetMonth.length === 0) {
+      setPoints([]);
+      return;
+    }
+
+    const minDay = Math.min(...readingsOfTargetMonth.map(({ timestamp }) => timestamp.getDate()));
+    const maxDay = Math.max(...readingsOfTargetMonth.map(({ timestamp }) => timestamp.getDate()));
+    const dayRange = maxDay - minDay || 1;
+
+    const dataPoints = readingsOfTargetMonth.map(({ timestamp, ...reading }) => {
+      const value = reading[readingType];
+      const readingIndex = readings.findIndex((r) => r.timestamp === timestamp);
+      const windowStart = Math.max(0, readingIndex - slidingWindowSize + 1);
+      const windowEnd = readingIndex + 1;
+      const trendValue = readings.slice(windowStart, windowEnd).reduce((sum, r) => sum + r[readingType], 0) / (windowEnd - windowStart);
+      return {
+        x: (timestamp.getDate() - minDay) / dayRange,
+        y: value,
+        trend: trendValue,
+        label: timestamp.toLocaleDateString(),
+        level: getReadingLevel(readingType, value),
+      };
+    });
 
     setPoints(dataPoints);
-  }, [readings, type, targetMonth]);
+  }, [readings, readingType, targetMonth, slidingWindowSize]);
 
   useEffect(() => {
     const handleResize = () => setIsNarrow(window.innerWidth < 640);
@@ -57,19 +75,67 @@ export function TrendChart({ readings, type, targetMonth, slidingWindowSize = 10
   const range = maxY - minY || 1;
 
   const chartHeight = 200;
-  const baseChartWidth = Math.max(400, points.length * 40);
+  const baseChartWidth = 400;
   const chartWidth = isNarrow ? Math.min(baseChartWidth, window.innerWidth - 100) : baseChartWidth;
   const padding = 40;
-  const dataAreaWidth = chartWidth * 0.9;
-  const dataStartX = chartWidth * 0.05;
 
-  const windowSize = slidingWindowSize;
-  const slidingAverage = points.map((_, i) => {
-    const start = Math.max(0, i - Math.floor(windowSize / 2));
-    const end = Math.min(points.length, i + Math.floor(windowSize / 2) + 1);
-    const avg = points.slice(start, end).reduce((sum, p) => sum + p.y, 0) / (end - start);
-    return { ...points[i], y: avg };
-  });
+  const renderGridLines = () => {
+    const strokeColor = getChartColor('color-amber');
+    return (
+      <>
+        {[0, 0.5, 1].map((ratio) => {
+          const y = padding + (1 - ratio) * chartHeight;
+          const value = Math.round(minY + ratio * range);
+          return (
+            <g key={ratio}>
+              <line x1={padding} y1={y} x2={chartWidth + padding} y2={y} stroke={strokeColor} strokeDasharray="4" strokeOpacity="0.5" />
+              <text x={padding - 10} y={y + 4} textAnchor="end" fontSize="12" fill={strokeColor}>
+                {value}
+              </text>
+            </g>
+          );
+        })}
+      </>
+    );
+  };
+
+  const renderAxes = () => {
+    const strokeColor = getChartColor('color-amber');
+    return (
+      <>
+        <line x1={padding} y1={padding} x2={padding} y2={padding + chartHeight} stroke={strokeColor} strokeWidth="2" />
+        <line
+          x1={padding}
+          y1={padding + chartHeight}
+          x2={chartWidth + padding}
+          y2={padding + chartHeight}
+          stroke={strokeColor}
+          strokeWidth="2"
+        />
+      </>
+    );
+  };
+
+  const renderTrendLine = () => {
+    const trendColor = getChartColor('color-accent');
+    return (
+      points.length > 1 && (
+        <polyline
+          points={points.map((p) => `${padding + p.x * chartWidth},${padding + (1 - (p.trend - minY) / range) * chartHeight}`).join(' ')}
+          stroke={trendColor}
+          strokeWidth="2"
+          fill="none"
+        />
+      )
+    );
+  };
+
+  const renderDataPoints = () =>
+    points.map((point, i) => {
+      const cx = padding + point.x * chartWidth;
+      const cy = padding + (1 - (point.y - minY) / range) * chartHeight;
+      return <circle key={i} cx={cx} cy={cy} r="4" fill={getColorValue(point.level)} />;
+    });
 
   return (
     <div className="overflow-x-auto">
@@ -80,49 +146,10 @@ export function TrendChart({ readings, type, targetMonth, slidingWindowSize = 10
         className="mx-auto"
         style={{ maxWidth: '100%', height: 'auto' }}
       >
-        {[0, 0.5, 1].map((ratio) => {
-          const y = padding + (1 - ratio) * chartHeight;
-          const value = Math.round(minY + ratio * range);
-          return (
-            <g key={ratio}>
-              <line x1={padding} y1={y} x2={chartWidth + padding} y2={y} stroke="#ee9424" strokeDasharray="4" strokeOpacity="0.5" />
-              <text x={padding - 10} y={y + 4} textAnchor="end" fontSize="12" fill="#ee9424">
-                {value}
-              </text>
-            </g>
-          );
-        })}
-        <line x1={padding} y1={padding} x2={padding} y2={padding + chartHeight} stroke="#ee9424" strokeWidth="2" />
-        <line
-          x1={padding}
-          y1={padding + chartHeight}
-          x2={chartWidth + padding}
-          y2={padding + chartHeight}
-          stroke="#ee9424"
-          strokeWidth="2"
-        />
-        {slidingAverage.length > 1 && (
-          <polyline
-            points={slidingAverage
-              .map(
-                (p) =>
-                  `${padding + dataStartX + (p.x / (points.length - 1)) * dataAreaWidth},${padding + (1 - (p.y - minY) / range) * chartHeight}`,
-              )
-              .join(' ')}
-            stroke="#c1440e"
-            strokeWidth="2"
-            fill="none"
-          />
-        )}
-        {points.map((p, i) => (
-          <circle
-            key={i}
-            cx={padding + dataStartX + (p.x / Math.max(1, points.length - 1)) * dataAreaWidth}
-            cy={padding + (1 - (p.y - minY) / range) * chartHeight}
-            r="4"
-            fill={getColorValue(p.level)}
-          />
-        ))}
+        {renderGridLines()}
+        {renderAxes()}
+        {renderTrendLine()}
+        {renderDataPoints()}
       </svg>
     </div>
   );
