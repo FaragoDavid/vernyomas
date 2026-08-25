@@ -1,10 +1,11 @@
 import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
-import { useEffect, useState } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-import { DeleteConfirmDialog } from './ConfirmDialog';
 import type { BloodPressureReading } from '../types/reading';
+import { getReadingLevel } from '../utils/blood-pressure-level';
+import { DeleteConfirmDialog } from './ConfirmDialog';
 
 interface ReadingTableProps {
   readings: BloodPressureReading[];
@@ -42,25 +43,27 @@ export function ReadingTable({ readings, onDelete, onEdit, disabled = false }: R
     </tr>
   );
 
-  const readingRows = [...readings].reverse().map((reading) => (
-    <tr key={reading.id} className="table-row">
-      <td className="table-cell-date">{format(reading.timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu })}</td>
-      <td className="table-cell">{reading.systolic}</td>
-      <td className="table-cell">{reading.diastolic}</td>
-      <td className="table-cell">{reading.pulse}</td>
-      {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
-      <td className="table-cell-center">
-        <div className="table-cell-actions">
-          <button onClick={() => onEdit(reading)} className="btn-edit" disabled={disabled}>
-            <Edit2 size={18} />
-          </button>
-          <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete" disabled={disabled}>
-            <Trash2 size={18} />
-          </button>
-        </div>
-      </td>
-    </tr>
-  ));
+  const readingRows = [...readings].reverse().map((reading) => {
+    return (
+      <tr key={reading.id} className="table-row">
+        <td className="table-cell-date">{format(reading.timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu })}</td>
+        <td className={`table-cell bp-${getReadingLevel('systolic', reading.systolic)}`}>{reading.systolic}</td>
+        <td className={`table-cell bp-${getReadingLevel('diastolic', reading.diastolic)}`}>{reading.diastolic}</td>
+        <td className="table-cell">{reading.pulse}</td>
+        {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
+        <td className="table-cell-center">
+          <div className="table-cell-actions">
+            <button onClick={() => onEdit(reading)} className="btn-edit" disabled={disabled}>
+              <Edit2 size={18} />
+            </button>
+            <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete" disabled={disabled}>
+              <Trash2 size={18} />
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  });
 
   return (
     <>

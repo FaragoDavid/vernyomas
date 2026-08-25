@@ -1,19 +1,26 @@
-import { useEffect, useState } from 'react';
 import { isSameMonth } from 'date-fns';
-import type { BloodPressureReading } from '../types/reading';
+import { useEffect, useState } from 'react';
+
+import type { BloodPressureReading, ReadingType } from '../types/reading';
+import { type BloodPressureLevel, getReadingLevel } from '../utils/blood-pressure-level';
 
 interface Point {
   x: number;
   y: number;
   label: string;
+  level: BloodPressureLevel;
 }
 
 interface TrendChartProps {
   readings: BloodPressureReading[];
-  type: 'systolic' | 'diastolic' | 'pulse';
+  type: ReadingType;
   targetMonth: Date;
   slidingWindowSize?: number;
 }
+
+const getColorValue = (level: BloodPressureLevel): string => {
+  return getComputedStyle(document.documentElement).getPropertyValue(`--bp-${level}`).trim();
+};
 
 export function TrendChart({ readings, type, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
   const [points, setPoints] = useState<Point[]>([]);
@@ -24,11 +31,15 @@ export function TrendChart({ readings, type, targetMonth, slidingWindowSize = 10
 
     const dataPoints = readings
       .filter((r) => isSameMonth(r.timestamp, targetMonth))
-      .map((reading, index) => ({
-        x: index,
-        y: type === 'systolic' ? reading.systolic : type === 'diastolic' ? reading.diastolic : reading.pulse,
-        label: reading.timestamp.toLocaleDateString(),
-      }));
+      .map((reading, index) => {
+        const value = type === 'systolic' ? reading.systolic : type === 'diastolic' ? reading.diastolic : reading.pulse;
+        return {
+          x: index,
+          y: value,
+          label: reading.timestamp.toLocaleDateString(),
+          level: getReadingLevel(type, value),
+        };
+      });
 
     setPoints(dataPoints);
   }, [readings, type, targetMonth]);
@@ -109,7 +120,7 @@ export function TrendChart({ readings, type, targetMonth, slidingWindowSize = 10
             cx={padding + dataStartX + (p.x / Math.max(1, points.length - 1)) * dataAreaWidth}
             cy={padding + (1 - (p.y - minY) / range) * chartHeight}
             r="4"
-            fill="#ee9424"
+            fill={getColorValue(p.level)}
           />
         ))}
       </svg>

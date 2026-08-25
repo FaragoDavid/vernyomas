@@ -35,6 +35,17 @@ cp .env.example .env
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 ```
 
+**Blood Pressure Thresholds** can be customized via environment variables:
+
+```env
+VITE_SYSTOLIC_WARNING=120      # Yellow threshold for systolic
+VITE_SYSTOLIC_DANGER=140       # Red threshold for systolic
+VITE_DIASTOLIC_WARNING=80      # Yellow threshold for diastolic
+VITE_DIASTOLIC_DANGER=90       # Red threshold for diastolic
+```
+
+Values are displayed in yellow for warning level and red for danger level in the table and chart.
+
 ### Development
 
 ```bash

@@ -14,6 +14,9 @@
     --color-accent: #c1440e;
     --color-text: #d4c5b9;
     --color-amber: #ee9424;
+    --bp-normal: #d4c5b9;
+    --bp-warning: #fbbf24;
+    --bp-danger: #ef4444;
   }
 }
 
@@ -465,5 +468,17 @@
 
   .btn-refresh:hover:not(:disabled) {
     opacity: 0.8;
+  }
+
+  .bp-normal {
+    color: var(--bp-normal);
+  }
+
+  .bp-warning {
+    color: var(--bp-warning);
+  }
+
+  .bp-danger {
+    color: var(--bp-danger);
   }
 }

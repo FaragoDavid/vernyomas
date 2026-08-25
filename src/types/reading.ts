@@ -1,3 +1,5 @@
+export type ReadingType = 'systolic' | 'diastolic' | 'pulse';
+
 export interface BloodPressureReading {
   id: string;
   systolic: number;
