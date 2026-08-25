@@ -10,9 +10,10 @@ interface ReadingTableProps {
   readings: BloodPressureReading[];
   onDelete: (id: string) => void;
   onEdit: (reading: BloodPressureReading) => void;
+  disabled?: boolean;
 }
 
-export function ReadingTable({ readings, onDelete, onEdit }: ReadingTableProps) {
+export function ReadingTable({ readings, onDelete, onEdit, disabled = false }: ReadingTableProps) {
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -50,10 +51,10 @@ export function ReadingTable({ readings, onDelete, onEdit }: ReadingTableProps) 
       {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
       <td className="table-cell-center">
         <div className="table-cell-actions">
-          <button onClick={() => onEdit(reading)} className="btn-edit">
+          <button onClick={() => onEdit(reading)} className="btn-edit" disabled={disabled}>
             <Edit2 size={18} />
           </button>
-          <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete">
+          <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete" disabled={disabled}>
             <Trash2 size={18} />
           </button>
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 
 import Login from './components/Login';
 import { ReadingDialog } from './components/ReadingDialog';
@@ -17,19 +17,27 @@ function App() {
   const store = useStore();
   const [readings, setReadings] = useState<BloodPressureReading[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [chartView, setChartView] = useState<ChartView>('systolic');
   const [editingReading, setEditingReading] = useState<BloodPressureReading | null>(null);
   const [chartMonthOffset, setChartMonthOffset] = useState(0);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 640);
 
-  useEffect(() => {
-    const loadReadings = async () => {
-      setLoading(true);
-      const data = await store.readReadings();
-      setReadings(data.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
-      setLoading(false);
-    };
+  const loadReadings = async () => {
+    setLoading(true);
+    const data = await store.readReadings();
+    setReadings(data.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+    setLoading(false);
+  };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    const data = await store.readReadings();
+    setReadings(data.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
     loadReadings();
   }, [store]);
 
@@ -81,7 +89,17 @@ function App() {
           <div>
             <h1 className="page-title">Vérnyomás</h1>
           </div>
-          <ReadingDialog onAdd={handleAddReading} editingReading={editingReading} onEditingChange={setEditingReading} />
+          <div className="btn-header-group">
+            <button onClick={handleRefresh} disabled={refreshing} className="btn-refresh" title="Frissítés">
+              <RefreshCw size={16} />
+            </button>
+            <ReadingDialog
+              onAdd={handleAddReading}
+              editingReading={editingReading}
+              onEditingChange={setEditingReading}
+              disabled={refreshing}
+            />
+          </div>
         </div>
 
         {loading ? (
@@ -145,7 +163,7 @@ function App() {
               </div>
             </div>
 
-            <ReadingTable readings={readings} onDelete={handleDeleteReading} onEdit={handleEditReading} />
+            <ReadingTable readings={readings} onDelete={handleDeleteReading} onEdit={handleEditReading} disabled={refreshing} />
           </>
         )}
       </div>

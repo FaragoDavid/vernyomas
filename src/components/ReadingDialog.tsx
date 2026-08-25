@@ -7,9 +7,10 @@ interface ReadingDialogProps {
   onAdd: (reading: Omit<BloodPressureReading, 'id'>) => void;
   editingReading?: BloodPressureReading | null;
   onEditingChange?: (reading: BloodPressureReading | null) => void;
+  disabled?: boolean;
 }
 
-export function ReadingDialog({ onAdd, editingReading, onEditingChange }: ReadingDialogProps) {
+export function ReadingDialog({ onAdd, editingReading, onEditingChange, disabled = false }: ReadingDialogProps) {
   const [open, setOpen] = useState(false);
   const [systolic, setSystolic] = useState('');
   const [diastolic, setDiastolic] = useState('');
@@ -64,7 +65,7 @@ export function ReadingDialog({ onAdd, editingReading, onEditingChange }: Readin
 
   return (
     <>
-      <button onClick={() => setOpen(!open)} className="btn-primary" title="Új mérés">
+      <button onClick={() => setOpen(!open)} className="btn-primary" title="Új mérés" disabled={disabled}>
         <Plus size={16} />
       </button>
 
