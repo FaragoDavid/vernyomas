@@ -1,37 +1,23 @@
-interface ConfirmDialogProps {
+interface DeleteConfirmDialogProps {
   open: boolean;
-  title: string;
-  message: string;
-  confirmText?: string;
-  cancelText?: string;
   onConfirm: () => void;
   onCancel: () => void;
-  isDangerous?: boolean;
 }
 
-export function ConfirmDialog({
-  open,
-  title,
-  message,
-  confirmText = 'Confirmar',
-  cancelText = 'Cancelar',
-  onConfirm,
-  onCancel,
-  isDangerous = false,
-}: ConfirmDialogProps) {
+export function DeleteConfirmDialog({ open, onConfirm, onCancel }: DeleteConfirmDialogProps) {
   if (!open) return null;
 
   return (
     <div className="overlay">
       <div className="modal" style={{ maxWidth: '24rem' }}>
-        <h2 className="modal-title">{title}</h2>
-        <p className="text-sm text-cream-100 mb-6">{message}</p>
+        <h2 className="modal-title">Mérés törlése</h2>
+        <p className="text-sm text-cream-100 mb-6">Biztos vagy, hogy szeretnéd törölni ezt a mérést?</p>
         <div className="modal-actions">
           <button onClick={onCancel} className="btn-secondary">
-            {cancelText}
+            Mégse
           </button>
-          <button onClick={onConfirm} className="btn-primary" style={isDangerous ? { backgroundColor: 'var(--color-accent)' } : undefined}>
-            {confirmText}
+          <button onClick={onConfirm} className="btn-primary" style={{ backgroundColor: 'var(--color-accent)' }}>
+            Törlés
           </button>
         </div>
       </div>

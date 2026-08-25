@@ -3,7 +3,7 @@ import { hu } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 
-import { ConfirmDialog } from './ConfirmDialog';
+import { DeleteConfirmDialog } from './ConfirmDialog';
 import type { BloodPressureReading } from '../types/reading';
 
 interface ReadingTableProps {
@@ -78,16 +78,7 @@ export function ReadingTable({ readings, onDelete, onEdit }: ReadingTableProps) 
           <tbody>{readings.length === 0 ? emptyState : readingRows}</tbody>
         </table>
       </div>
-      <ConfirmDialog
-        open={deleteConfirm !== null}
-        title="Mérés törlése"
-        message="Biztos vagy, hogy szeretnéd törölni ezt a mérést?"
-        confirmText="Törlés"
-        cancelText="Mégse"
-        isDangerous
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setDeleteConfirm(null)}
-      />
+      <DeleteConfirmDialog open={deleteConfirm !== null} onConfirm={handleConfirmDelete} onCancel={() => setDeleteConfirm(null)} />
     </>
   );
 }
