@@ -33,6 +33,34 @@ export function ReadingTable({ readings, onDelete, onEdit }: ReadingTableProps) 
     }
   };
 
+  const emptyState = (
+    <tr>
+      <td colSpan={isNarrow ? 5 : 6} className="table-cell table-empty">
+        Nincs mérés
+      </td>
+    </tr>
+  );
+
+  const readingRows = readings.map((reading) => (
+    <tr key={reading.id} className="table-row">
+      <td className="table-cell-date">{format(reading.timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu })}</td>
+      <td className="table-cell">{reading.systolic}</td>
+      <td className="table-cell">{reading.diastolic}</td>
+      <td className="table-cell">{reading.pulse}</td>
+      {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
+      <td className="table-cell-center">
+        <div className="table-cell-actions">
+          <button onClick={() => onEdit(reading)} className="btn-edit">
+            <Edit2 size={18} />
+          </button>
+          <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete">
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </td>
+    </tr>
+  ));
+
   return (
     <>
       <div className="table-card">
@@ -47,35 +75,7 @@ export function ReadingTable({ readings, onDelete, onEdit }: ReadingTableProps) 
               <th className="table-header-cell table-cell-center"></th>
             </tr>
           </thead>
-          <tbody>
-            {readings.length === 0 ? (
-              <tr>
-                <td colSpan={isNarrow ? 5 : 6} className="table-cell table-empty">
-                  Nincs mérés
-                </td>
-              </tr>
-            ) : (
-              readings.map((reading) => (
-                <tr key={reading.id} className="table-row">
-                  <td className="table-cell-date">{format(reading.timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu })}</td>
-                  <td className="table-cell">{reading.systolic}</td>
-                  <td className="table-cell">{reading.diastolic}</td>
-                  <td className="table-cell">{reading.pulse}</td>
-                  {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
-                  <td className="table-cell-center">
-                    <div className="table-cell-actions">
-                      <button onClick={() => onEdit(reading)} className="btn-edit">
-                        <Edit2 size={18} />
-                      </button>
-                      <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
+          <tbody>{readings.length === 0 ? emptyState : readingRows}</tbody>
         </table>
       </div>
       <ConfirmDialog
