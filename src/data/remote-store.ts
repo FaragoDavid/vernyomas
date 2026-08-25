@@ -3,7 +3,6 @@ import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy 
 import { CACHE_KEY, type Store } from './store';
 import { db } from '../services/firebase';
 import type { BloodPressureReading } from '../types/reading';
-import { sortByTimestampAsc } from '../utils/sort';
 
 const COLLECTION = 'readings';
 
@@ -25,18 +24,16 @@ export function createRemoteStore(): Store {
         }) as BloodPressureReading[];
 
         localStorage.setItem(CACHE_KEY, JSON.stringify(readings.map((r) => ({ ...r, timestamp: r.timestamp.getTime() }))));
-        return readings.sort(sortByTimestampAsc);
+        return readings;
       } catch (error) {
         console.error('Failed to read readings from Firestore:', error);
         const cached = localStorage.getItem(CACHE_KEY);
         if (!cached) return [];
         const parsed = JSON.parse(cached);
-        return parsed
-          .map((r: any) => ({
-            ...r,
-            timestamp: new Date(typeof r.timestamp === 'number' ? r.timestamp : r.timestamp),
-          }))
-          .sort(sortByTimestampAsc);
+        return parsed.map((r: any) => ({
+          ...r,
+          timestamp: new Date(typeof r.timestamp === 'number' ? r.timestamp : r.timestamp),
+        }));
       }
     },
 

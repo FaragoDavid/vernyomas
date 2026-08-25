@@ -9,12 +9,10 @@ export function createLocalStore(): Store {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
-        return parsed
-          .map((r: any) => ({
-            ...r,
-            timestamp: new Date(typeof r.timestamp === 'number' ? r.timestamp : r.timestamp),
-          }))
-          .sort(sortByTimestampAsc);
+        return parsed.map((r: any) => ({
+          ...r,
+          timestamp: new Date(typeof r.timestamp === 'number' ? r.timestamp : r.timestamp),
+        }));
       }
       const sorted = [...MOCK_READINGS].sort(sortByTimestampAsc);
       localStorage.setItem(CACHE_KEY, JSON.stringify(sorted.map((r) => ({ ...r, timestamp: r.timestamp.getTime() }))));
