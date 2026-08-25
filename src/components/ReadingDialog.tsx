@@ -4,14 +4,15 @@ import { Plus } from 'lucide-react';
 import type { BloodPressureReading } from '../types/reading';
 
 interface ReadingDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onAdd: (reading: Omit<BloodPressureReading, 'id'>) => void;
   editingReading?: BloodPressureReading | null;
   onEditingChange?: (reading: BloodPressureReading | null) => void;
   disabled?: boolean;
 }
 
-export function ReadingDialog({ onAdd, editingReading, onEditingChange, disabled = false }: ReadingDialogProps) {
-  const [open, setOpen] = useState(false);
+export function ReadingDialog({ open, onOpenChange, onAdd, editingReading, onEditingChange, disabled = false }: ReadingDialogProps) {
   const [systolic, setSystolic] = useState('');
   const [diastolic, setDiastolic] = useState('');
   const [pulse, setPulse] = useState('');
@@ -31,13 +32,13 @@ export function ReadingDialog({ onAdd, editingReading, onEditingChange, disabled
       const date = new Date(editingReading.timestamp);
       date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
       setTimestamp(date.toISOString().slice(0, 16));
-      setOpen(true);
+      onOpenChange(true);
     }
-  }, [editingReading]);
+  }, [editingReading, onOpenChange]);
 
   const handleClose = () => {
     onEditingChange?.(null);
-    setOpen(false);
+    onOpenChange(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -65,10 +66,6 @@ export function ReadingDialog({ onAdd, editingReading, onEditingChange, disabled
 
   return (
     <>
-      <button onClick={() => setOpen(!open)} className="btn-primary" title="Új mérés" disabled={disabled}>
-        <Plus size={16} />
-      </button>
-
       {open && (
         <div className="overlay">
           <div className="modal">

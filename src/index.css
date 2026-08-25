@@ -438,7 +438,7 @@
     opacity: 0.8;
   }
 
-  .btn-header-group {
+  .header-actions {
     display: flex;
     gap: 0.5rem;
     align-items: center;

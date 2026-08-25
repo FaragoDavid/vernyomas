@@ -18,6 +18,7 @@ function App() {
   const [readings, setReadings] = useState<BloodPressureReading[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [chartView, setChartView] = useState<ChartView>('systolic');
   const [editingReading, setEditingReading] = useState<BloodPressureReading | null>(null);
   const [chartMonthOffset, setChartMonthOffset] = useState(0);
@@ -89,16 +90,13 @@ function App() {
           <div>
             <h1 className="page-title">Vérnyomás</h1>
           </div>
-          <div className="btn-header-group">
+          <div className="header-actions">
             <button onClick={handleRefresh} disabled={refreshing} className="btn-refresh" title="Frissítés">
               <RefreshCw size={16} />
             </button>
-            <ReadingDialog
-              onAdd={handleAddReading}
-              editingReading={editingReading}
-              onEditingChange={setEditingReading}
-              disabled={refreshing}
-            />
+            <button onClick={() => setDialogOpen(true)} className="btn-primary" title="Új mérés" disabled={refreshing}>
+              <Plus size={16} />
+            </button>
           </div>
         </div>
 
@@ -106,6 +104,14 @@ function App() {
           <div className="text-center text-cream-100 py-12">Betöltés...</div>
         ) : (
           <>
+            <ReadingDialog
+              open={dialogOpen}
+              onOpenChange={setDialogOpen}
+              onAdd={handleAddReading}
+              editingReading={editingReading}
+              onEditingChange={setEditingReading}
+              disabled={refreshing}
+            />
             <StatsStrip readings={readings} />
 
             <div className="card">
