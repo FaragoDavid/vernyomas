@@ -1,4 +1,4 @@
-import { isSameMonth } from 'date-fns';
+import { format, isAfter, isBefore, isSameDay, isSameMonth, subDays } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { useNarrow } from '../hooks/use-narrow';
@@ -8,9 +8,13 @@ import { type BloodPressureLevel, getReadingLevel } from '../utils/blood-pressur
 interface Point {
   x: number;
   y: number;
-  trend: number;
   label: string;
   level: BloodPressureLevel;
+}
+
+interface SlidingAveragePoint {
+  x: number;
+  y: number;
 }
 
 interface TrendChartProps {
@@ -30,6 +34,7 @@ const getColorValue = (level: BloodPressureLevel): string => {
 
 export function TrendChart({ readings, readingType, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
   const [points, setPoints] = useState<Point[]>([]);
+  const [slidingAvgPoints, setSlidingAvgPoints] = useState<SlidingAveragePoint[]>([]);
   const isNarrow = useNarrow();
 
   useEffect(() => {
@@ -45,16 +50,36 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
     const maxDay = Math.max(...readingsOfTargetMonth.map(({ timestamp }) => timestamp.getDate()));
     const dayRange = maxDay - minDay || 1;
 
+    const daysOfSlidingAvg = new Set();
+    setSlidingAvgPoints(
+      readingsOfTargetMonth.reduce((points: SlidingAveragePoint[], { timestamp }) => {
+        if (daysOfSlidingAvg.has(format(timestamp, 'yyyyMMdd'))) return points;
+        daysOfSlidingAvg.add(format(timestamp, 'yyyyMMdd'));
+
+        const avgStartDate = subDays(timestamp, slidingWindowSize);
+        let readingCountInSlidingWindow = 0;
+        const slidingWindowSum = readings.reduce((sum, reading) => {
+          if (isAfter(reading.timestamp, avgStartDate) && !isAfter(reading.timestamp, timestamp)) {
+            readingCountInSlidingWindow++;
+            return sum + reading[readingType];
+          }
+          return sum;
+        }, 0);
+
+        points.push({
+          x: (timestamp.getDate() - minDay) / dayRange,
+          y: slidingWindowSum / readingCountInSlidingWindow,
+        });
+
+        return points;
+      }, []),
+    );
+
     const dataPoints = readingsOfTargetMonth.map(({ timestamp, ...reading }) => {
       const value = reading[readingType];
-      const readingIndex = readings.findIndex((r) => r.timestamp === timestamp);
-      const windowStart = Math.max(0, readingIndex - slidingWindowSize + 1);
-      const windowEnd = readingIndex + 1;
-      const trendValue = readings.slice(windowStart, windowEnd).reduce((sum, r) => sum + r[readingType], 0) / (windowEnd - windowStart);
       return {
         x: (timestamp.getDate() - minDay) / dayRange,
         y: value,
-        trend: trendValue,
         label: timestamp.toLocaleDateString(),
         level: getReadingLevel(readingType, value),
       };
@@ -113,16 +138,28 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
 
   const renderTrendLine = () => {
     const trendColor = getChartColor('color-accent');
-    return (
-      points.length > 1 && (
-        <polyline
-          points={points.map((p) => `${padding + p.x * chartWidth},${padding + (1 - (p.trend - minY) / range) * chartHeight}`).join(' ')}
-          stroke={trendColor}
-          strokeWidth="2"
-          fill="none"
-        />
-      )
-    );
+    if (slidingAvgPoints.length < 2) return null;
+
+    const coords = slidingAvgPoints.map((p) => ({
+      x: padding + p.x * chartWidth,
+      y: padding + (1 - (p.y - minY) / range) * chartHeight,
+    }));
+
+    let pathD = `M ${coords[0].x} ${coords[0].y}`;
+    for (let i = 1; i < coords.length; i++) {
+      const curr = coords[i];
+      const prev = coords[i - 1];
+      const next = coords[i + 1];
+
+      const cp1x = prev.x + (curr.x - prev.x) / 3;
+      const cp1y = prev.y + (curr.y - prev.y) / 3;
+      const cp2x = curr.x - (next ? (next.x - curr.x) / 3 : 0);
+      const cp2y = curr.y - (next ? (next.y - curr.y) / 3 : 0);
+
+      pathD += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${curr.x} ${curr.y}`;
+    }
+
+    return <path d={pathD} stroke={trendColor} strokeWidth="2" fill="none" />;
   };
 
   const renderDataPoints = () =>
