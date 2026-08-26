@@ -481,4 +481,17 @@
   .bp-danger {
     color: var(--bp-danger);
   }
+
+  .tooltip {
+    position: fixed;
+    background-color: var(--color-page-bg);
+    color: var(--color-text);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+    margin-top: -0.5rem;
+  }
 }

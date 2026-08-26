@@ -1,4 +1,5 @@
 import { format, isAfter, isBefore, isSameDay, isSameMonth, subDays } from 'date-fns';
+import { hu } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 
 import { useNarrow } from '../hooks/use-narrow';
@@ -35,6 +36,7 @@ const getColorValue = (level: BloodPressureLevel): string => {
 export function TrendChart({ readings, readingType, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
   const [points, setPoints] = useState<Point[]>([]);
   const [slidingAvgPoints, setSlidingAvgPoints] = useState<SlidingAveragePoint[]>([]);
+  const [tooltip, setTooltip] = useState<{ clientX: number; clientY: number; date: string; value: number } | null>(null);
   const isNarrow = useNarrow();
 
   useEffect(() => {
@@ -80,7 +82,7 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
       return {
         x: (timestamp.getDate() - minDay) / dayRange,
         y: value,
-        label: timestamp.toLocaleDateString(),
+        label: format(timestamp, isNarrow ? 'MMM d' : 'yyyy. MMM dd.', { locale: hu }),
         level: getReadingLevel(readingType, value),
       };
     });
@@ -166,11 +168,25 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
     points.map((point, i) => {
       const cx = padding + point.x * chartWidth;
       const cy = padding + (1 - (point.y - minY) / range) * chartHeight;
-      return <circle key={i} cx={cx} cy={cy} r="4" fill={getColorValue(point.level)} />;
+      return (
+        <circle
+          key={i}
+          cx={cx}
+          cy={cy}
+          r="4"
+          fill={getColorValue(point.level)}
+          onMouseEnter={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            setTooltip({ clientX: rect.left, clientY: rect.top, date: point.label, value: point.y });
+          }}
+          onMouseLeave={() => setTooltip(null)}
+          style={{ cursor: 'pointer' }}
+        />
+      );
     });
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <svg
         viewBox={`0 0 ${chartWidth + padding * 2} ${chartHeight + padding * 2}`}
         width={chartWidth + padding * 2}
@@ -183,6 +199,11 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
         {renderTrendLine()}
         {renderDataPoints()}
       </svg>
+      {tooltip && (
+        <div className="tooltip" style={{ left: tooltip.clientX, top: tooltip.clientY }}>
+          <b>{tooltip.date}:</b> {tooltip.value}
+        </div>
+      )}
     </div>
   );
 }
