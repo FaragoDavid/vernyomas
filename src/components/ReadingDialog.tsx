@@ -17,6 +17,7 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
   const [pulse, setPulse] = useState(initialReading?.pulse.toString() ?? '');
   const [timestamp, setTimestamp] = useState<number>(initialReading?.timestamp.getTime() ?? Date.now());
   const [notes, setNotes] = useState(initialReading?.notes ?? '');
+  const [isDirty, setIsDirty] = useState(!initialReading);
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -43,18 +44,39 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
           </div>
           <div id="field-diastolic" className="form-field">
             <label className="form-label">Diasztolés</label>
-            <input type="number" value={diastolic} onChange={(e) => setDiastolic(e.target.value)} placeholder="80" className="form-input" />
+            <input
+              type="number"
+              value={diastolic}
+              onChange={(e) => {
+                setIsDirty(true);
+                setDiastolic(e.target.value);
+              }}
+              placeholder="80"
+              className="form-input"
+            />
           </div>
           <div id="field-pulse" className="form-field">
             <label className="form-label">Pulzus</label>
-            <input type="number" value={pulse} onChange={(e) => setPulse(e.target.value)} placeholder="72" className="form-input" />
+            <input
+              type="number"
+              value={pulse}
+              onChange={(e) => {
+                setIsDirty(true);
+                setPulse(e.target.value);
+              }}
+              placeholder="72"
+              className="form-input"
+            />
           </div>
           <div id="field-timestamp" className="form-field">
             <label className="form-label">Dátum és idő</label>
             <input
               type="datetime-local"
               value={format(new Date(timestamp), "yyyy-MM-dd'T'HH:mm")}
-              onChange={(e) => setTimestamp(new Date(e.target.value).getTime())}
+              onChange={(e) => {
+                setIsDirty(true);
+                setTimestamp(new Date(e.target.value).getTime());
+              }}
               className="form-input"
             />
           </div>
@@ -62,7 +84,10 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             <label className="form-label">Megjegyzések (opcionális)</label>
             <textarea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => {
+                setIsDirty(true);
+                setNotes(e.target.value);
+              }}
               placeholder="Bármilyen megjegyzés..."
               className="form-input"
               rows={3}
@@ -72,7 +97,7 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             <button type="button" onClick={onClose} className="btn-secondary" disabled={disabled}>
               Mégse
             </button>
-            <button type="submit" className="btn-primary" disabled={disabled}>
+            <button type="submit" className="btn-primary" disabled={!isDirty || disabled}>
               Mentés
             </button>
           </div>
