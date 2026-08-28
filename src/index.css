@@ -10,10 +10,10 @@
     --color-table-row-even: #244d3d;
     --color-table-row-odd: #28603f;
     --color-primary: #3d7d5f;
-    --color-primary-hover: #28603f;
     --color-accent: #c1440e;
     --color-text: #d4c5b9;
     --color-amber: #ee9424;
+    --color-amber-hover: #c87a1e;
     --bp-normal: #d4c5b9;
     --bp-warning: #fbbf24;
     --bp-danger: #ef4444;
@@ -100,8 +100,8 @@
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
     font-size: 0.875rem;
-    background-color: var(--color-primary);
-    color: var(--color-text);
+    background-color: var(--color-amber);
+    color: var(--color-page-bg);
     border: none;
     cursor: pointer;
     font-weight: 500;
@@ -112,7 +112,7 @@
   }
 
   .btn-primary:hover {
-    background-color: var(--color-primary-hover);
+    background-color: var(--color-amber-hover);
   }
 
   .btn-primary:disabled {
