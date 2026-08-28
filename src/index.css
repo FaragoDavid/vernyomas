@@ -2,27 +2,34 @@
 
 @layer theme {
   :root {
-    --color-page-bg: #1b4332;
-    --color-header-bg: #28603f;
-    --color-table-header-bg: #28603f;
-    --color-table-header-text: #ee9424;
-    --color-table-bg: #244d3d;
-    --color-table-row-even: #244d3d;
-    --color-table-row-odd: #28603f;
-    --color-primary: #3d7d5f;
-    --color-accent: #c1440e;
-    --color-text: #d4c5b9;
-    --color-amber: #ee9424;
-    --color-amber-hover: #c87a1e;
-    --bp-normal: #d4c5b9;
-    --bp-warning: #fbbf24;
-    --bp-danger: #ef4444;
+    --green-900: #1b4332;
+    --green-800: #28603f;
+    --green-700: #3d6b50;
+    --green-650: #4a7a5e;
+    --amber-500: #ee9424;
+    --amber-600: #c87a1e;
+    --yellow-400: #fbbf24;
+    --red-500: #ef4444;
+    --sand-300: #d4c5b9;
+
+    --color-bg: var(--green-900);
+    --color-surface: var(--green-800);
+    --color-surface-alt: var(--green-700);
+    --color-surface-hover: var(--green-650);
+    --color-primary: var(--amber-500);
+    --color-primary-hover: var(--amber-600);
+    --color-danger: var(--red-500);
+    --color-text: var(--sand-300);
+
+    --bp-normal: var(--sand-300);
+    --bp-warning: var(--yellow-400);
+    --bp-danger: var(--red-500);
   }
 }
 
 @layer base {
   body {
-    background-color: var(--color-page-bg);
+    background-color: var(--color-bg);
     color: var(--color-text);
     font-family:
       -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -86,22 +93,22 @@
     justify-content: space-between;
     margin-bottom: 1.5rem;
     padding: 1rem 1.25rem;
-    background-color: var(--color-header-bg);
+    background-color: var(--color-surface);
     border-radius: 0.5rem;
   }
 
   .page-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--color-amber);
+    color: var(--color-primary);
   }
 
   .btn-primary {
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
     font-size: 0.875rem;
-    background-color: var(--color-amber);
-    color: var(--color-page-bg);
+    background-color: var(--color-primary);
+    color: var(--color-bg);
     border: none;
     cursor: pointer;
     font-weight: 500;
@@ -112,7 +119,7 @@
   }
 
   .btn-primary:hover {
-    background-color: var(--color-amber-hover);
+    background-color: var(--color-primary-hover);
   }
 
   .btn-primary:disabled {
@@ -123,7 +130,7 @@
   .stat-card {
     padding: 0.5rem;
     border-radius: 0.375rem;
-    background-color: var(--color-header-bg);
+    background-color: var(--color-surface);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -146,7 +153,7 @@
   .stat-value {
     font-size: 1.125rem;
     font-weight: 700;
-    color: var(--color-amber);
+    color: var(--color-primary);
     display: inline;
     margin-left: 0.25rem;
   }
@@ -166,15 +173,14 @@
   .card {
     padding: 1rem;
     border-radius: 0.5rem;
-    background-color: var(--color-header-bg);
+    background-color: var(--color-surface);
     margin-bottom: 1.5rem;
   }
 
   .tab-btn {
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
-    background-color: var(--color-header-bg);
-    color: var(--color-amber);
+    color: var(--color-primary);
     border: none;
     cursor: pointer;
     font-weight: 500;
@@ -183,14 +189,14 @@
   }
 
   .tab-btn:hover {
-    background-color: #244d3d;
+    background-color: var(--color-surface-alt);
   }
 
   .tab-btn-active {
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
-    background-color: var(--color-amber);
-    color: var(--color-page-bg);
+    background-color: var(--color-primary);
+    color: var(--color-bg);
     border: none;
     cursor: pointer;
     font-weight: 500;
@@ -224,7 +230,7 @@
     font-size: 0.875rem;
     background: none;
     border: none;
-    color: var(--color-amber);
+    color: var(--color-primary);
     cursor: pointer;
     border-radius: 0.25rem;
   }
@@ -263,8 +269,8 @@
   }
 
   .table-header-row {
-    background-color: var(--color-table-header-bg);
-    border-bottom: 2px solid var(--color-amber);
+    background-color: var(--color-surface);
+    border-bottom: 2px solid var(--color-primary);
   }
 
   .table-header-cell {
@@ -272,7 +278,7 @@
     text-align: left;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--color-table-header-text);
+    color: var(--color-primary);
   }
 
   .table-header-row .table-header-cell:first-child {
@@ -284,17 +290,17 @@
   }
 
   .table-row {
-    background-color: var(--color-table-row-even);
-    border-bottom: 1px solid #1b4332;
+    background-color: var(--color-surface-alt);
+    border-bottom: 1px solid var(--color-bg);
     transition: background-color 0.2s;
   }
 
   .table-row:nth-child(odd) {
-    background-color: var(--color-table-row-odd);
+    background-color: var(--color-surface);
   }
 
   .table-row:hover {
-    background-color: var(--color-table-row-odd);
+    background-color: var(--color-surface-hover);
   }
 
   .table-row:last-child {
@@ -335,7 +341,7 @@
   }
 
   .btn-edit {
-    color: var(--color-amber);
+    color: var(--color-primary);
     background: none;
     border: none;
     cursor: pointer;
@@ -344,7 +350,7 @@
   }
 
   .btn-delete {
-    color: var(--color-amber);
+    color: var(--color-primary);
     background: none;
     border: none;
     cursor: pointer;
@@ -379,7 +385,7 @@
   }
 
   .modal {
-    background-color: var(--color-page-bg);
+    background-color: var(--color-bg);
     border-radius: 0.5rem;
     padding: 1.5rem;
     max-width: 28rem;
@@ -391,7 +397,7 @@
   .modal-title {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--color-amber);
+    color: var(--color-primary);
     margin-bottom: 1rem;
   }
 
@@ -405,22 +411,22 @@
   .form-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--color-amber);
+    color: var(--color-primary);
   }
 
   .form-input {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 1px solid var(--color-amber);
+    border: 1px solid var(--color-primary);
     border-radius: 0.375rem;
-    background-color: var(--color-header-bg);
+    background-color: var(--color-surface);
     color: var(--color-text);
     font-size: 0.875rem;
     outline: none;
   }
 
   .form-input:focus {
-    border-color: var(--color-amber);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(238, 148, 36, 0.3);
   }
 
@@ -434,8 +440,8 @@
   .btn-secondary {
     padding: 0.5rem 1rem;
     background: none;
-    color: var(--color-amber);
-    border: 1px solid var(--color-amber);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
     border-radius: 0.375rem;
     cursor: pointer;
     font-size: 0.875rem;
@@ -454,8 +460,8 @@
 
   .btn-refresh {
     padding: 0.5rem 1rem;
-    background-color: var(--color-header-bg);
-    color: var(--color-amber);
+    background-color: var(--color-surface);
+    color: var(--color-primary);
     border: none;
     border-radius: 0.375rem;
     cursor: pointer;
@@ -489,7 +495,7 @@
 
   .tooltip {
     position: fixed;
-    background-color: var(--color-page-bg);
+    background-color: var(--color-bg);
     color: var(--color-text);
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;

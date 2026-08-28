@@ -16,7 +16,7 @@ export function DeleteConfirmDialog({ open, onConfirm, onCancel }: DeleteConfirm
           <button onClick={onCancel} className="btn-secondary">
             Mégse
           </button>
-          <button onClick={onConfirm} className="btn-primary" style={{ backgroundColor: 'var(--color-accent)' }}>
+          <button onClick={onConfirm} className="btn-primary" style={{ backgroundColor: 'var(--color-danger)' }}>
             Törlés
           </button>
         </div>

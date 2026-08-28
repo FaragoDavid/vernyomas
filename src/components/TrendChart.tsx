@@ -18,8 +18,8 @@ interface TrendChartProps {
   slidingWindowSize?: number;
 }
 
-const getChartColor = (colorName: string): string => {
-  return getComputedStyle(document.documentElement).getPropertyValue(`--${colorName}`).trim();
+const getChartColor = (colorName: string, alpha?: number): string => {
+  return getComputedStyle(document.documentElement).getPropertyValue(`--${colorName}`).trim() + (alpha || '');
 };
 
 export function TrendChart({ readings, readingType, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
@@ -81,7 +81,7 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
         data: slidingAvgPoints,
         pointRadius: 0,
         pointHoverRadius: 0,
-        borderColor: getChartColor('color-accent'),
+        borderColor: getChartColor('color-primary', 90),
         backgroundColor: 'transparent',
         borderWidth: 2,
         cubicInterpolationMode: 'monotone' as const,
@@ -114,10 +114,10 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
             return ` ${time} — ${raw.y}`;
           },
         },
-        backgroundColor: getChartColor('color-page-bg'),
+        backgroundColor: getChartColor('color-bg'),
         bodyColor: getChartColor('color-text'),
-        titleColor: getChartColor('color-amber'),
-        borderColor: getChartColor('color-amber'),
+        titleColor: getChartColor('color-primary'),
+        borderColor: getChartColor('color-primary'),
         borderWidth: 1,
         padding: 8,
         bodyFont: { size: 12 },
@@ -129,14 +129,14 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
         type: 'time' as const,
         time: { unit: 'day' as const },
         adapters: { date: { locale: hu } },
-        ticks: { color: getChartColor('color-amber'), font: { size: 11 }, maxRotation: 45 },
-        grid: { color: `${getChartColor('color-amber')}30` },
-        border: { color: getChartColor('color-amber') },
+        ticks: { color: getChartColor('color-primary'), font: { size: 11 }, maxRotation: 45 },
+        grid: { color: `${getChartColor('color-primary', 30)}` },
+        border: { color: getChartColor('color-primary') },
       },
       y: {
-        ticks: { color: getChartColor('color-amber'), font: { size: 11 } },
-        grid: { color: `${getChartColor('color-amber')}30` },
-        border: { color: getChartColor('color-amber') },
+        ticks: { color: getChartColor('color-primary'), font: { size: 11 } },
+        grid: { color: `${getChartColor('color-primary', 30)}` },
+        border: { color: getChartColor('color-primary') },
       },
     },
   };
