@@ -80,11 +80,19 @@ function App() {
             <button onClick={handleRefresh} disabled={refreshing} className="btn-refresh" title="Frissítés">
               <RefreshCw size={16} />
             </button>
-            <button onClick={() => setDialogOpen(true)} className="btn-primary" title="Új mérés" disabled={refreshing}>
-              <Plus size={16} />
-            </button>
+            {!isNarrow && (
+              <button onClick={() => setDialogOpen(true)} className="btn-primary" title="Új mérés" disabled={refreshing}>
+                <Plus size={16} />
+              </button>
+            )}
           </div>
         </div>
+
+        {isNarrow && (
+          <button onClick={() => setDialogOpen(true)} className="btn-fab" disabled={refreshing}>
+            <Plus size={18} />
+          </button>
+        )}
 
         {loading ? (
           <div className="text-center text-cream-100 py-12">Betöltés...</div>
