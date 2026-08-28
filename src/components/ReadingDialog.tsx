@@ -97,7 +97,7 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             <button type="button" onClick={onClose} className="btn-secondary" disabled={disabled}>
               Mégse
             </button>
-            <button type="submit" className="btn-primary" disabled={!isDirty || disabled}>
+            <button type="submit" className="btn-primary" disabled={!isDirty || !systolic || !diastolic || !pulse || disabled}>
               Mentés
             </button>
           </div>
