@@ -241,7 +241,12 @@
   }
 
   .chart-body {
-    padding: 0;
+    padding: 1rem 0;
+  }
+
+  .chart-canvas-container {
+    position: relative;
+    height: 260px;
   }
 
   .table-card {
