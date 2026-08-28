@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import type { BloodPressureReading } from '../types/reading';
 
@@ -19,6 +19,14 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
   const [notes, setNotes] = useState(initialReading?.notes ?? '');
   const [isDirty, setIsDirty] = useState(!initialReading);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (systolic && diastolic && pulse) {
@@ -34,8 +42,8 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
   };
 
   return (
-    <div className="overlay">
-      <div className="modal">
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-title">{title}</h2>
         <form onSubmit={handleSubmit}>
           <div id="field-systolic" className="form-field">
