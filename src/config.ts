@@ -5,12 +5,14 @@ export const config = {
 
   bloodPressureThresholds: {
     systolic: {
-      warning: parseInt(import.meta.env.VITE_SYSTOLIC_WARNING) || 120,
-      danger: parseInt(import.meta.env.VITE_SYSTOLIC_DANGER) || 140,
+      low: parseInt(import.meta.env.VITE_SYSTOLIC_LOW) || 90,
+      elevated: parseInt(import.meta.env.VITE_SYSTOLIC_ELEVATED) || 140,
+      hypertension: parseInt(import.meta.env.VITE_SYSTOLIC_HYPERTENSION) || 160,
     },
     diastolic: {
-      warning: parseInt(import.meta.env.VITE_DIASTOLIC_WARNING) || 80,
-      danger: parseInt(import.meta.env.VITE_DIASTOLIC_DANGER) || 90,
+      low: parseInt(import.meta.env.VITE_DIASTOLIC_LOW) || 60,
+      elevated: parseInt(import.meta.env.VITE_DIASTOLIC_ELEVATED) || 90,
+      hypertension: parseInt(import.meta.env.VITE_DIASTOLIC_HYPERTENSION) || 110,
     },
   },
 

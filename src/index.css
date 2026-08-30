@@ -21,9 +21,10 @@
     --color-danger: var(--red-500);
     --color-text: var(--sand-300);
 
+    --bp-low: hsl(200 60% 65%);
     --bp-normal: var(--sand-300);
-    --bp-warning: var(--yellow-400);
-    --bp-danger: var(--red-500);
+    --bp-elevated: var(--yellow-400);
+    --bp-hypertension: var(--red-500);
   }
 }
 
@@ -509,16 +510,20 @@
     opacity: 0.8;
   }
 
+  .bp-low {
+    color: var(--bp-low);
+  }
+
   .bp-normal {
     color: var(--bp-normal);
   }
 
-  .bp-warning {
-    color: var(--bp-warning);
+  .bp-elevated {
+    color: var(--bp-elevated);
   }
 
-  .bp-danger {
-    color: var(--bp-danger);
+  .bp-hypertension {
+    color: var(--bp-hypertension);
   }
 
   .tooltip {
