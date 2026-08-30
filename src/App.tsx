@@ -7,6 +7,7 @@ import { ReadingDialog } from './components/ReadingDialog';
 import { ReadingTable } from './components/ReadingTable';
 import { StatsStrip } from './components/StatsStrip';
 import { TrendChart } from './components/TrendChart';
+import { config } from './config';
 import { useStore } from './data/store';
 import { useNarrow } from './hooks/use-narrow';
 import { i18n } from './i18n/hu';
@@ -157,7 +158,7 @@ function App() {
                   readings={readings}
                   readingType={chartView}
                   targetMonth={targetMonth}
-                  slidingWindowSize={parseInt(import.meta.env.VITE_CHART_SLIDING_WINDOW_SIZE || '10')}
+                  slidingWindowSize={config.slidingWindowSize}
                 />
                 <div className="chart-month-label">
                   {targetMonth.toLocaleString('hu', {

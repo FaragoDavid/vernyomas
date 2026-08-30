@@ -6,6 +6,7 @@ import { hu } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 
+import { config } from '../config';
 import type { BloodPressureReading, ReadingType } from '../types/reading';
 import { type BloodPressureLevel, getReadingLevel } from '../utils/blood-pressure-level';
 
@@ -15,14 +16,14 @@ interface TrendChartProps {
   readings: BloodPressureReading[];
   readingType: ReadingType;
   targetMonth: Date;
-  slidingWindowSize?: number;
+  slidingWindowSize: number;
 }
 
 const getChartColor = (colorName: string, alpha?: number): string => {
   return getComputedStyle(document.documentElement).getPropertyValue(`--${colorName}`).trim() + (alpha || '');
 };
 
-export function TrendChart({ readings, readingType, targetMonth, slidingWindowSize = 10 }: TrendChartProps) {
+export function TrendChart({ readings, readingType, targetMonth, slidingWindowSize }: TrendChartProps) {
   const [dataPoints, setDataPoints] = useState<{ x: number; y: number; level: BloodPressureLevel; label: string }[]>([]);
   const [slidingAvgPoints, setSlidingAvgPoints] = useState<{ x: number; y: number }[]>([]);
 
@@ -69,8 +70,8 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
         label: readingType,
         data: dataPoints,
         pointBackgroundColor: dataPoints.map((point) => getChartColor(`bp-${point.level}`)),
-        pointRadius: 4,
-        pointHoverRadius: 8,
+        pointRadius: config.chart.pointRadius,
+        pointHoverRadius: config.chart.pointHoverRadius,
         borderColor: 'transparent',
         backgroundColor: 'transparent',
         tension: 0,
@@ -83,7 +84,7 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
         pointHoverRadius: 0,
         borderColor: getChartColor('color-primary', 90),
         backgroundColor: 'transparent',
-        borderWidth: 2,
+        borderWidth: config.chart.trendLineWidth,
         cubicInterpolationMode: 'monotone' as const,
         spanGaps: false,
         order: 2,
@@ -94,7 +95,7 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: 200 },
+    animation: { duration: config.chart.animationDuration },
     interaction: {
       mode: 'point' as const,
       intersect: true,
@@ -118,10 +119,10 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
         bodyColor: getChartColor('color-text'),
         titleColor: getChartColor('color-primary'),
         borderColor: getChartColor('color-primary'),
-        borderWidth: 1,
-        padding: 8,
-        bodyFont: { size: 12 },
-        titleFont: { size: 12 },
+        borderWidth: config.chart.tooltipBorderWidth,
+        padding: config.chart.tooltipPadding,
+        bodyFont: { size: config.chart.tooltipFontSize },
+        titleFont: { size: config.chart.tooltipFontSize },
       },
     },
     scales: {
@@ -129,12 +130,16 @@ export function TrendChart({ readings, readingType, targetMonth, slidingWindowSi
         type: 'time' as const,
         time: { unit: 'day' as const },
         adapters: { date: { locale: hu } },
-        ticks: { color: getChartColor('color-primary'), font: { size: 11 }, maxRotation: 45 },
+        ticks: {
+          color: getChartColor('color-primary'),
+          font: { size: config.chart.tickFontSize },
+          maxRotation: config.chart.xAxisMaxRotation,
+        },
         grid: { color: `${getChartColor('color-primary', 30)}` },
         border: { color: getChartColor('color-primary') },
       },
       y: {
-        ticks: { color: getChartColor('color-primary'), font: { size: 11 } },
+        ticks: { color: getChartColor('color-primary'), font: { size: config.chart.tickFontSize } },
         grid: { color: `${getChartColor('color-primary', 30)}` },
         border: { color: getChartColor('color-primary') },
       },
