@@ -9,6 +9,7 @@ import { StatsStrip } from './components/StatsStrip';
 import { TrendChart } from './components/TrendChart';
 import { useStore } from './data/store';
 import { useNarrow } from './hooks/use-narrow';
+import { i18n } from './i18n/hu';
 import { useAuth } from './services/auth';
 import type { BloodPressureReading } from './types/reading';
 
@@ -74,14 +75,14 @@ function App() {
       <div className="page-inner">
         <div className="page-header">
           <div>
-            <h1 className="page-title">Vérnyomás</h1>
+            <h1 className="page-title">{i18n.appTitle}</h1>
           </div>
           <div className="header-actions">
-            <button onClick={handleRefresh} disabled={refreshing} className="btn-refresh" title="Frissítés">
+            <button onClick={handleRefresh} disabled={refreshing} className="btn-refresh" title={i18n.actions.refresh}>
               <RefreshCw size={16} />
             </button>
             {!isNarrow && (
-              <button onClick={() => setDialogOpen(true)} className="btn-primary" title="Új mérés" disabled={refreshing}>
+              <button onClick={() => setDialogOpen(true)} className="btn-primary" title={i18n.actions.newReading} disabled={refreshing}>
                 <Plus size={16} />
               </button>
             )}
@@ -95,12 +96,12 @@ function App() {
         )}
 
         {loading ? (
-          <div className="text-center text-cream-100 py-12">Betöltés...</div>
+          <div className="text-center text-cream-100 py-12">{i18n.loading}</div>
         ) : (
           <>
             {dialogOpen && (
               <ReadingDialog
-                title={editingReading ? 'Mérés szerkesztése' : 'Új mérés'}
+                title={editingReading ? i18n.dialog.editTitle : i18n.actions.newReading}
                 initialReading={editingReading ?? undefined}
                 onAdd={handleSaveReading}
                 onClose={() => {
@@ -119,15 +120,15 @@ function App() {
                     <button key={view} onClick={() => setChartView(view)} className={chartView === view ? 'tab-btn-active' : 'tab-btn'}>
                       {isNarrow
                         ? view === 'systolic'
-                          ? 'Sys'
+                          ? i18n.chart.systolicShort
                           : view === 'diastolic'
-                            ? 'Dia'
-                            : 'Pul'
+                            ? i18n.chart.diastolicShort
+                            : i18n.chart.pulseShort
                         : view === 'systolic'
-                          ? 'Szisztolés'
+                          ? i18n.chart.systolic
                           : view === 'diastolic'
-                            ? 'Diasztolés'
-                            : 'Pulzus'}
+                            ? i18n.chart.diastolic
+                            : i18n.chart.pulse}
                     </button>
                   ))}
                 </div>
@@ -140,7 +141,7 @@ function App() {
                     onClick={() => setTargetMonth(new Date())}
                     disabled={isSameMonth(targetMonth, new Date())}
                   >
-                    Ma
+                    {i18n.actions.today}
                   </button>
                   <button
                     className="chart-month-btn"

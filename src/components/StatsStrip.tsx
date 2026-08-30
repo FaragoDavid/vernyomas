@@ -1,4 +1,5 @@
 import { useNarrow } from '../hooks/use-narrow';
+import { i18n } from '../i18n/hu';
 import type { BloodPressureReading } from '../types/reading';
 
 export function StatsStrip({ readings }: { readings: BloodPressureReading[] }) {
@@ -16,19 +17,19 @@ export function StatsStrip({ readings }: { readings: BloodPressureReading[] }) {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 mb-6">
       <div className="stat-card">
-        <div className="stat-label">{isNarrow ? 'Átl. sys' : 'Átl. szisztolés'}</div>
+        <div className="stat-label">{isNarrow ? i18n.stats.avgSystolicShort : i18n.stats.avgSystolic}</div>
         <div className="stat-value">{avgSystolic}</div>
       </div>
       <div className="stat-card">
-        <div className="stat-label">{isNarrow ? 'Átl. dia' : 'Átl. diasztolés'}</div>
+        <div className="stat-label">{isNarrow ? i18n.stats.avgDiastolicShort : i18n.stats.avgDiastolic}</div>
         <div className="stat-value">{avgDiastolic}</div>
       </div>
       <div className="stat-card">
-        <div className="stat-label">{isNarrow ? 'Átl. pul' : 'Átl. pulzus'}</div>
+        <div className="stat-label">{isNarrow ? i18n.stats.avgPulseShort : i18n.stats.avgPulse}</div>
         <div className="stat-value">{avgPulse}</div>
       </div>
       <div className="stat-card">
-        <div className="stat-label">{isNarrow ? 'Tart.' : 'Tartomány'}</div>
+        <div className="stat-label">{isNarrow ? i18n.stats.rangeShort : i18n.stats.range}</div>
         <div className="stat-value">
           {minSystolic}–{maxSystolic}
         </div>

@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 
+import { i18n } from '../i18n/hu';
 import type { BloodPressureReading } from '../types/reading';
 
 interface ReadingDialogProps {
@@ -47,11 +48,11 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
         <h2 className="modal-title">{title}</h2>
         <form onSubmit={handleSubmit}>
           <div id="field-systolic" className="form-field">
-            <label className="form-label">Szisztolés</label>
+            <label className="form-label">{i18n.dialog.systolic}</label>
             <input type="number" value={systolic} onChange={(e) => setSystolic(e.target.value)} placeholder="120" className="form-input" />
           </div>
           <div id="field-diastolic" className="form-field">
-            <label className="form-label">Diasztolés</label>
+            <label className="form-label">{i18n.dialog.diastolic}</label>
             <input
               type="number"
               value={diastolic}
@@ -64,7 +65,7 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             />
           </div>
           <div id="field-pulse" className="form-field">
-            <label className="form-label">Pulzus</label>
+            <label className="form-label">{i18n.dialog.pulse}</label>
             <input
               type="number"
               value={pulse}
@@ -77,7 +78,7 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             />
           </div>
           <div id="field-timestamp" className="form-field">
-            <label className="form-label">Dátum és idő</label>
+            <label className="form-label">{i18n.dialog.datetime}</label>
             <input
               type="datetime-local"
               value={format(new Date(timestamp), "yyyy-MM-dd'T'HH:mm")}
@@ -89,24 +90,24 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             />
           </div>
           <div id="field-notes" className="form-field">
-            <label className="form-label">Megjegyzések (opcionális)</label>
+            <label className="form-label">{i18n.dialog.notes}</label>
             <textarea
               value={notes}
               onChange={(e) => {
                 setIsDirty(true);
                 setNotes(e.target.value);
               }}
-              placeholder="Bármilyen megjegyzés..."
+              placeholder={i18n.dialog.notesPlaceholder}
               className="form-input"
               rows={3}
             />
           </div>
           <div className="modal-actions">
             <button type="button" onClick={onClose} className="btn-secondary" disabled={disabled}>
-              Mégse
+              {i18n.actions.cancel}
             </button>
             <button type="submit" className="btn-primary" disabled={!isDirty || !systolic || !diastolic || !pulse || disabled}>
-              Mentés
+              {i18n.actions.save}
             </button>
           </div>
         </form>

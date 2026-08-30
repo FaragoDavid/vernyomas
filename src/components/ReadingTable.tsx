@@ -4,6 +4,7 @@ import { Edit2, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { useNarrow } from '../hooks/use-narrow';
+import { i18n } from '../i18n/hu';
 import type { BloodPressureReading } from '../types/reading';
 import { getReadingLevel } from '../utils/blood-pressure-level';
 import { DeleteConfirmDialog } from './ConfirmDialog';
@@ -33,7 +34,7 @@ export function ReadingTable({ readings, onDelete, onEdit, disabled = false }: R
   const emptyState = (
     <tr>
       <td colSpan={isNarrow ? 5 : 6} className="table-cell table-empty">
-        Nincs mérés
+        {i18n.noReadings}
       </td>
     </tr>
   );
@@ -66,11 +67,11 @@ export function ReadingTable({ readings, onDelete, onEdit, disabled = false }: R
         <table>
           <thead>
             <tr className="table-header-row">
-              <th className="table-header-cell">Dátum</th>
-              <th className="table-header-cell">Szisztolés</th>
-              <th className="table-header-cell">Diasztolés</th>
-              <th className="table-header-cell">Pulzus</th>
-              {!isNarrow && <th className="table-header-cell">Megjegyzések</th>}
+              <th className="table-header-cell">{i18n.table.date}</th>
+              <th className="table-header-cell">{i18n.table.systolic}</th>
+              <th className="table-header-cell">{i18n.table.diastolic}</th>
+              <th className="table-header-cell">{i18n.table.pulse}</th>
+              {!isNarrow && <th className="table-header-cell">{i18n.table.notes}</th>}
               <th className="table-header-cell table-cell-center"></th>
             </tr>
           </thead>

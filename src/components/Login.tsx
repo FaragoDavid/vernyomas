@@ -1,4 +1,5 @@
 import { signIn } from '../services/auth';
+import { i18n } from '../i18n/hu';
 
 export default function Login() {
   async function handleSignIn() {
@@ -12,8 +13,8 @@ export default function Login() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="card p-8 max-w-sm w-full text-center">
-        <h1 className="page-title mb-2">Vérnyomás</h1>
-        <p className="text-sm text-cream-100 mb-6">Bejelentkezés szükséges</p>
+        <h1 className="page-title mb-2">{i18n.appTitle}</h1>
+        <p className="text-sm text-cream-100 mb-6">{i18n.login.subtitle}</p>
         <button onClick={handleSignIn} className="btn-primary w-full flex items-center justify-center gap-2">
           <svg width="18" height="18" viewBox="0 0 18 18">
             <path
@@ -33,7 +34,7 @@ export default function Login() {
               d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
             />
           </svg>
-          Bejelentkezés Google-lel
+          {i18n.login.googleButton}
         </button>
       </div>
     </div>
