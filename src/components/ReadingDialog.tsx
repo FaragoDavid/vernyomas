@@ -48,12 +48,24 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
         <h2 className="modal-title">{title}</h2>
         <form onSubmit={handleSubmit}>
           <div id="field-systolic" className="form-field">
-            <label className="form-label">{i18n.dialog.systolic}</label>
-            <input type="number" value={systolic} onChange={(e) => setSystolic(e.target.value)} placeholder="120" className="form-input" />
+            <label htmlFor="systolic" className="form-label">
+              {i18n.dialog.systolic}
+            </label>
+            <input
+              id="systolic"
+              type="number"
+              value={systolic}
+              onChange={(e) => setSystolic(e.target.value)}
+              placeholder="120"
+              className="form-input"
+            />
           </div>
           <div id="field-diastolic" className="form-field">
-            <label className="form-label">{i18n.dialog.diastolic}</label>
+            <label htmlFor="diastolic" className="form-label">
+              {i18n.dialog.diastolic}
+            </label>
             <input
+              id="diastolic"
               type="number"
               value={diastolic}
               onChange={(e) => {
@@ -65,8 +77,11 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             />
           </div>
           <div id="field-pulse" className="form-field">
-            <label className="form-label">{i18n.dialog.pulse}</label>
+            <label htmlFor="pulse" className="form-label">
+              {i18n.dialog.pulse}
+            </label>
             <input
+              id="pulse"
               type="number"
               value={pulse}
               onChange={(e) => {
@@ -78,8 +93,11 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             />
           </div>
           <div id="field-timestamp" className="form-field">
-            <label className="form-label">{i18n.dialog.datetime}</label>
+            <label htmlFor="timestamp" className="form-label">
+              {i18n.dialog.datetime}
+            </label>
             <input
+              id="timestamp"
               type="datetime-local"
               value={format(new Date(timestamp), "yyyy-MM-dd'T'HH:mm")}
               onChange={(e) => {
@@ -90,8 +108,11 @@ export function ReadingDialog({ title, initialReading, onAdd, onClose, disabled 
             />
           </div>
           <div id="field-notes" className="form-field">
-            <label className="form-label">{i18n.dialog.notes}</label>
+            <label htmlFor="notes" className="form-label">
+              {i18n.dialog.notes}
+            </label>
             <textarea
+              id="notes"
               value={notes}
               onChange={(e) => {
                 setIsDirty(true);

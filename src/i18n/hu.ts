@@ -10,6 +10,7 @@ export const i18n = {
   actions: {
     refresh: 'Frissítés',
     newReading: 'Új mérés',
+    edit: 'Szerkesztés',
     save: 'Mentés',
     cancel: 'Mégse',
     delete: 'Törlés',

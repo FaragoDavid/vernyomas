@@ -49,10 +49,15 @@ export function ReadingTable({ readings, onDelete, onEdit, disabled = false }: R
         {!isNarrow && <td className="table-cell-muted">{reading.notes || '—'}</td>}
         <td className="table-cell-center">
           <div className="table-cell-actions">
-            <button onClick={() => onEdit(reading)} className="btn-edit" disabled={disabled}>
+            <button onClick={() => onEdit(reading)} className="btn-edit" aria-label={i18n.actions.edit} disabled={disabled}>
               <Edit2 size={18} />
             </button>
-            <button onClick={() => handleDeleteClick(reading.id)} className="btn-delete" disabled={disabled}>
+            <button
+              onClick={() => handleDeleteClick(reading.id)}
+              className="btn-delete"
+              aria-label={i18n.actions.delete}
+              disabled={disabled}
+            >
               <Trash2 size={18} />
             </button>
           </div>
