@@ -5,7 +5,7 @@ import type { BloodPressureReading } from '../types/reading';
 export const CACHE_KEY = 'vernyomas_readings';
 
 export interface Store {
-  readReadings(): Promise<BloodPressureReading[]>;
+  readReadings(skipCache?: boolean): Promise<BloodPressureReading[]>;
   addReading(reading: Omit<BloodPressureReading, 'id'>): Promise<string>;
   updateReading(reading: BloodPressureReading): Promise<void>;
   deleteReading(id: string): Promise<void>;

@@ -37,7 +37,7 @@ function App() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    const data = await store.readReadings();
+    const data = await store.readReadings(true);
     setReadings(data);
     setRefreshing(false);
   };
