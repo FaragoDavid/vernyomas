@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -15,5 +15,10 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: 5174,
+  },
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['**/*.test.ts', '**/*.test.tsx'],
   },
 }));
